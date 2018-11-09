@@ -24,3 +24,8 @@
   fill: none;
   stroke: steelblue;
 }
+
+/* Remove vega links */
+div.vega-actions-wrapper{
+  display: none;
+}
