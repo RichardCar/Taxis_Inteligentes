@@ -37,17 +37,97 @@
                 <h1 class="title">Actividad de Taxis</h1>
                 <h2 class="subtitle"></h2>
                 <div class="content">
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit mi, pharetra vel lectus eget, venenatis ullamcorper leo. Aliquam tincidunt leo vitae posuere euismod. Mauris placerat dignissim sem scelerisque finibus. Curabitur consequat mi et lacus laoreet rutrum. Fusce et gravida ante, et cursus augue. Vestibulum ultricies interdum convallis. Nullam sed est metus.</p>
+                    <p>Los Taxis Inteligentes usan aplicaciones móviles para calcular los costos de las carreras y su ruta, inlcuso cuando el servicio es tomado en la calle y no desde una app de usuario. Por esto, cuando los taxis inteligentes se desplazan por la ciudad se encuentran en uno de tres estados:</p>
+                    <ul>
+                        <li><b>Pedido:</b> Cuando el taxi está en ruta a recoger un pasajero que pidió el servicio por medio de una app.</li>
+                        <li><b>Ocupado:</b> Cuando el taxi se dirije al punto de destino de sus pasajeros después de que estos tomaran el servicio ya fuera por medio de una app o no.</li>
+                        <li><b>Vacío (null):</b> Cuando no está en ninguno de los dos estados anteriores.</li>
+                    </ul>
                 </div>
             </section>
             <section class="section">
+                <div class="columns is-mobile">
+                    <div class="column has-text-centered is-2">
+                        <label for="estado">Filtra por estado:</label><br>
+                        <div class="select">
+                            <select name="estado">
+                                <option value="all">Todos</option>
+                                <option value="pedido">Pedido</option>
+                                <option value="ocupado">Ocupado</option>
+                                <option value="null">Vacío</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="column has-text-centered is-2">
+                        <label for="hora1">Desde las: </label><br>
+                        <div class="select">
+                            <select name="hora1">
+                                <option value="0" selected>00:00</option>
+                                <option value="1">01:00</option>
+                                <option value="2">02:00</option>
+                                <option value="3">03:00</option>
+                                <option value="4">04:00</option>
+                                <option value="5">05:00</option>
+                                <option value="6">06:00</option>
+                                <option value="7">07:00</option>
+                                <option value="8">08:00</option>
+                                <option value="9">09:00</option>
+                                <option value="10">10:00</option>
+                                <option value="11">11:00</option>
+                                <option value="12">12:00</option>
+                                <option value="13">13:00</option>
+                                <option value="14">14:00</option>
+                                <option value="15">15:00</option>
+                                <option value="16">16:00</option>
+                                <option value="17">17:00</option>
+                                <option value="18">18:00</option>
+                                <option value="19">19:00</option>
+                                <option value="20">20:00</option>
+                                <option value="21">21:00</option>
+                                <option value="22">22:00</option>
+                                <option value="23">23:00</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="column has-text-centered is-2">
+                        <label for="hora2">Hsta las: </label><br>
+                        <div class="select">
+                            <select name="hora2">
+                                <option value="0">00:59</option>
+                                <option value="1">01:59</option>
+                                <option value="2">02:59</option>
+                                <option value="3">03:59</option>
+                                <option value="4">04:59</option>
+                                <option value="5">05:59</option>
+                                <option value="6">06:59</option>
+                                <option value="7">07:59</option>
+                                <option value="8">08:59</option>
+                                <option value="9">09:59</option>
+                                <option value="10">10:59</option>
+                                <option value="11">11:59</option>
+                                <option value="12">12:59</option>
+                                <option value="13">13:59</option>
+                                <option value="14">14:59</option>
+                                <option value="15">15:59</option>
+                                <option value="16">16:59</option>
+                                <option value="17">17:59</option>
+                                <option value="18">18:59</option>
+                                <option value="19">19:59</option>
+                                <option value="20">20:59</option>
+                                <option value="21">21:59</option>
+                                <option value="22">22:59</option>
+                                <option value="23" selected>23:59</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
                 <div class="columns is-desktop">
                     <div class="column">
                         <div id="lines"></div>
                     </div>
                     <div class="column">
                         <figure class="image is-square">
-                          <img src="https://bulma.io/images/placeholders/480x480.png">
+                          <img src="img/map-temp.jpg">
                         </figure>
                     </div>
                 </div>
