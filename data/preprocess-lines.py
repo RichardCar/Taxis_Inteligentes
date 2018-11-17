@@ -1,6 +1,7 @@
 import json
 import datetime
 import csv
+import hashlib
 
 from pprint import pprint
 
@@ -8,7 +9,7 @@ with open('actividad.json') as f:
   data = json.load(f)
 
 with open('actividad.csv', 'w') as csvfile:
-  fieldnames = ['h','fecha','hora','estado','lat','lon']
+  fieldnames = ['tid','h','fecha','hora','estado','lat','lon']
   writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
   writer.writeheader()
@@ -21,6 +22,6 @@ with open('actividad.csv', 'w') as csvfile:
     if(row["estado"] == "D"):
       st = "pedido"
 
-    writer.writerow({"h":str(dt.hour),"fecha":str(dt.year)+"-"+str(dt.month)+"-"+str(dt.day),"hora":str(dt.hour)+":"+str(dt.minute),"estado":st,"lat":row["latitud"],"lon":row["longitud"]})
+    writer.writerow({"tid":abs(hash(row["tarjetaControl"]) % (10 ** 8)),"h":str(dt.hour),"fecha":str(dt.year)+"-"+str(dt.month)+"-"+str(dt.day),"hora":str(dt.hour)+":"+str(dt.minute),"estado":st,"lat":row["latitud"],"lon":row["longitud"]})
 
 print("finished")

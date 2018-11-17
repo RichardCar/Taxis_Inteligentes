@@ -50,17 +50,17 @@
                     <div class="column has-text-centered is-2">
                         <label for="estado">Filtra por estado:</label><br>
                         <div class="select">
-                            <select name="estado">
+                            <select name="estado" id="estado">
                                 <option value="all">Todos</option>
-                                <option value="pedido">Pedido</option>
-                                <option value="ocupado">Ocupado</option>
-                                <option value="null">Vacío</option>
+                                <option value="pedidos">Pedido</option>
+                                <option value="ocupados">Ocupado</option>
+                                <option value="nulls">Vacío</option>
                             </select>
                         </div>
                     </div>
                     <div class="column has-text-centered is-2">
                         <label for="hora1">Desde las: </label><br>
-                        <div class="select">
+                        <div class="select" id="desde">
                             <select name="hora1">
                                 <option value="0" selected>00:00</option>
                                 <option value="1">01:00</option>
@@ -91,7 +91,7 @@
                     </div>
                     <div class="column has-text-centered is-2">
                         <label for="hora2">Hsta las: </label><br>
-                        <div class="select">
+                        <div class="select" id="hasta">
                             <select name="hora2">
                                 <option value="0">00:59</option>
                                 <option value="1">01:59</option>
