@@ -9,7 +9,7 @@ require([
 
     const map = new WebMap({
       portalItem: {
-        id: "d5dda743788a4b0688fe48f43ae7beb9"
+        id: "969976048a874f41bcdb9ad93f0713f0"
       }
     });
 
@@ -18,18 +18,6 @@ require([
       map: map
     });
 
-    const layerList = new LayerList({
-      view: view,
-      listItemCreatedFunction: function(event) {
-        const item = event.item;
-        if (item.layer.type != "group") { 
-          item.panel = {
-            content: "legend",
-            open: true
-          };
-        }
-      }
-    });
-    view.ui.add(layerList, "top-right");
+
 
   });

@@ -1,110 +1,111 @@
-var selectDepto = document.getElementById("selDepto"),
- margin = {
-  top: 20,
-  right: 80,
-  bottom: 130,
-  left: 50
-};
-width = 620, height = 500;
 
+var margin = {top: 10, right: 10, bottom: 10, left: 10};
+width = 600, height = 900;
+var units = "servicios";
+var formatNumber = d3.format(",.0f"),    // zero decimal places
+  format = function (d) { return formatNumber(d) + " " + units; },
+  color = d3.scaleOrdinal(d3.schemeCategory10);
+
+// append the svg object to the body of the page
+var svg = d3.select(".grafico").append("svg")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+  .attr("transform",
+    "translate(" + margin.left + "," + margin.top + ")");
+
+// Set the sankey diagram properties
+var sankey = d3.sankey()
+  .nodeWidth(36)
+  .nodePadding(40)
+  .size([width, height]);
+
+var path = sankey.link();
 //get Data
-const _urlData = "https://fabianheredia.github.io/creditosAgroColombia/data/datos.json";
+const _urlData = "data/datos1.json";
 
 d3.json(_urlData).then(datos => {
   console.log(datos);
-  
-  //Listado de Departamentos y tipos de productor
-  var departamentos = datos
-    .map(d => d.Departamento)
-    .filter((v, i, a) => a.indexOf(v) === i);
 
-  departamentos.map((d,i)=>{
-    let c = document.createElement("option");
-    c.text = d;
-    selectDepto.options.add(c, i);
-  });
-  selectDepto.getElementsByTagName('option')[1].selected = 'selected';
-  var tiposProductor = datos
-    .map(d => d.Tproductor)
-    .filter((v, i, a) => a.indexOf(v) === i);
-  const anios = datos
-    .map(d => d.Anio)
-    .filter((v, i, a) => a.indexOf(v) === i);
+  sankey
+    .nodes(datos.nodes)
+    .links(datos.links)
+    .layout(32);
 
-  //creo el espacio de trabajo
-  var svg = d3
-    .select(".grafico")
-    .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom);
-  var g = svg.append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-  // defini las escalas
-  var x = d3.scaleLinear().range([0, width]),
-    y = d3.scaleLinear().range([height, 0]),
-    z = d3.scaleOrdinal(d3.schemeDark2);
-  x.domain([d3.min(datos,d=>d.Anio),d3.max(datos,d=>d.Anio)]);
-  y.domain([(d3.min(datos, d => d.Valor)-1), d3.max(datos, d => d.Valor)]).nice();
+  // add in the links
+  var link = svg.append("g").selectAll(".link")
+    .data(datos.links)
+    .enter().append("path")
+    .attr("class", "link")
+    .attr("d", path)
+    .style("stroke-width", function (d) { return Math.max(1, d.dy); })
+    .sort(function (a, b) { return b.dy - a.dy; });
 
-  //console.log(departamentos);
-  g.append("g")
-    .attr("class", "axis axis--x")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x));
-
-  g.append("g")
-    .attr("class", "axis axis--y")
-    .call(d3.axisLeft(y))
-    .append("text")
-    .attr("transform", "rotate(-90)")
-    .attr("y", 6)
-    .attr("dy", "0.71em")
-    .attr("fill", "#000")
-    .text("Millones, $");
-
-  svg
-    .selectAll(".dot")
-    .data(datos)
-    .enter()
-    .append("circle")
-    .attr("r", 5)
-    .attr("transform", "translate("+ margin.left + "," + 0 + ")")
-    .attr("fill",d=> z(d.Tproductor))
-    .attr("cx", d => x(d.Anio))
-    .attr("cy", d => y(d.Valor))
-    .on("mouseover", d => {
-      d3.select(".info").remove();
-      console.log(d);
-      svg
-        .selectAll("text.info")
-        .data([d])
-        .enter()
-        .append("text")
-        .attr("class", "info")
-        .attr("x", d => {return x(d.Anio)+70;})
-        .attr("y", d => y(+d.Valor)+10) 
-        .text(d.Departamento+": "+d.Valor + " Millones");
+  // add the link titles
+  link.append("title")
+    .text(function (d) {
+      return d.source.name + " → " +
+        d.target.name + "\n" + format(d.value);
     });
-    
-    svg
-    .append("circle")
-    .attr("r", 5)
-    .attr("cx", 300)
-    .attr("cy", 600)
-    .attr("fill",d=> z("Pequenos Productores"));
-    svg
-    .append("circle")
-    .attr("r", 5)
-    .attr("cx", 500)
-    .attr("cy", 600)
-    .attr("fill",d=> z("Grandes Productores"));
-    svg.append("text")
-        .attr("x", 307)
-        .attr("y", 605) 
-        .text("Pequenos Productores");
-        svg.append("text")
-        .attr("x", 507)
-        .attr("y", 605) 
-        .text("Grandes Productores");
-  segundaGraica(datos);
+
+  // add in the nodes
+  var node = svg.append("g").selectAll(".node")
+    .data(datos.nodes)
+    .enter().append("g")
+    .attr("class", "node")
+    .attr("transform", function (d) {
+      return "translate(" + d.x + "," + d.y + ")";
+    })
+   // .on("click",(d)=>{console.log(d)})
+    .call(d3.drag()
+      .subject(function (d) {
+        return d;
+      })
+      .on("start", function () {
+        this.parentNode.appendChild(this);
+      })
+      .on("drag", dragmove)
+    //.on("click",d=>console.log(d))
+    );
+
+  // add the rectangles for the nodes
+  node.append("rect")
+    .attr("height", function (d) { return d.dy; })
+    .attr("width", sankey.nodeWidth())
+    .style("fill", function (d) {
+      return d.color = color(d.name.replace(/ .*/, ""));
+    })
+    .style("stroke", function (d) {
+      return d3.rgb(d.color).darker(2);
+    })
+    .append("title")
+    .text(function (d) {
+      return d.name + "\n" + format(d.value);
+    });
+   
+  // add in the title for the nodes
+  node.append("text")
+    .attr("x", -6)
+    .attr("y", function (d) { return d.dy / 2; })
+    .attr("dy", ".35em")
+    .attr("text-anchor", "end")
+    .attr("transform", null)
+    .text(function (d) { return d.name; })
+    .filter(function (d) { return d.x < width / 2; })
+    .attr("x", 6 + sankey.nodeWidth())
+    .attr("text-anchor", "start");
+
+  // the function for moving the nodes
+  function dragmove(d) {
+    d3.select(this)
+      .attr("transform",
+        "translate("
+        + d.x + ","
+        + (d.y = Math.max(
+          0, Math.min(height - d.dy, d3.event.y))
+        ) + ")");
+    sankey.relayout();
+    link.attr("d", path);
+  }
 });
+
