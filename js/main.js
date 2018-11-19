@@ -30,7 +30,7 @@ d3.json(_urlData).then(datos => {
   sankey
     .nodes(datos.nodes)
     .links(datos.links)
-    .layout(32);
+    .layout(50);
 
   // add in the links
   var link = svg.append("g").selectAll(".link")
@@ -56,6 +56,7 @@ d3.json(_urlData).then(datos => {
     .attr("transform", function (d) {
       return "translate(" + d.x + "," + d.y + ")";
     })
+    .on("click",changeMap)
    // .on("click",(d)=>{console.log(d)})
     .call(d3.drag()
       .subject(function (d) {
@@ -78,9 +79,10 @@ d3.json(_urlData).then(datos => {
     .style("stroke", function (d) {
       return d3.rgb(d.color).darker(2);
     })
+    .on("click",(d)=>console.log("hola"))
     .append("title")
     .text(function (d) {
-      return d.name + "\n" + format(d.value);
+      return d.name + "\n " + format(d.value);
     });
    
   // add in the title for the nodes
@@ -106,6 +108,10 @@ d3.json(_urlData).then(datos => {
         ) + ")");
     sankey.relayout();
     link.attr("d", path);
+  }
+
+  function changeMap(){
+    console.log("Hola");
   }
 });
 
