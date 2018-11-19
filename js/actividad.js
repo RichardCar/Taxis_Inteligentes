@@ -1,28 +1,6 @@
-/*d3.select(".div.vega-actions-wrapper").remove();
-var wh = d3.select("#lines").node().getBoundingClientRect().width-100;
-var lines = {
-  "data": {"url": "data/actividad.csv"},
-  "mark": {"type":"line", "point":{"color":"black"}},
-  "width": wh,
-  "height": wh,
-  "encoding": {
-    "x": {"field": "h", "type": "quantitative", "axis": {"title": "Hora (24 horas)"}},
-    "y": {"aggregate":"count","field": "estado", "type": "quantitative", "axis": {"title": "Estado (cantidad)"}},
-    "color": {
-      "field": "estado",
-      "type": "nominal",
-      "scale": {
-        "domain": ["null","ocupado","pedido"],
-        "range": ["#4c78a8","#f58518","#00a088"]
-      }
-    }
-  },
-}
-
-vegaEmbed("#lines", lines);*/
 var margin = ({top: 20, right: 0, bottom: 35, left: 40});
 var wh = d3.select("#lines").node().getBoundingClientRect().width-10;
-var rawData, nulls, pedidos, ocupados, max, x, y, p, o, n, totalMediciones, taxis;
+var rawData, mapData, nulls, pedidos, ocupados, max, x, y, p, o, n, totalMediciones, taxis;
 var f_estado = "all";
 var f_desde = 0;
 var f_hasta = 23;
@@ -107,7 +85,7 @@ function loadData(){
       }
     });
     totalMediciones = p+o+n;
-console.log(taxis);
+
     y = d3.scaleLinear()
       .domain([0, max])
       .range([ wh - margin.bottom, margin.top]);
@@ -186,3 +164,68 @@ d3.select("#hasta")
 window.onresize = function(event) {
   loadData();
 }
+
+/// Mapa /////////////////////
+d3.select("#map").attr("style","height:"+(wh-30)+"px");
+
+require([
+    "esri/map",
+    "esri/layers/FeatureLayer",
+    "dojo/_base/array",
+    "dojo/dom",
+    "dojo/number",
+    "dojo/on",
+    "dojo/parser",
+    "dojo/ready"
+], function (Map, FeatureLayer, array, dom, number, on, parser, ready) {
+    parser.parse();
+
+    var map, layer, quantize;
+
+    ready(function () {
+        map = new Map("map", {
+            basemap:"gray",
+            center:[-74.092092, 4.6509886],
+            zoom: 12
+        });
+        addMarks();
+    });
+
+    function addMarks() {
+      /*
+      var marks = new FeatureLayer("url-to-marks-layer", {
+        id:"marks",
+        styling:false
+      });
+      if(marks.surfaceType === "svg") {
+        quantize = d3.scaleQuantize()
+          .domain(["null","pedido","ocupado"])
+          .range(["#4c78a8","#00a088","#f58518"]);
+      }*/
+        /*var earthquakes = new FeatureLayer("https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Earthquakes/Since_1970/MapServer/0", {
+            id:"earthquakes",
+            styling:false
+        });
+
+        // Apply D3's Quantitative Scales
+        if (earthquakes.surfaceType === "svg") {
+            // construct a linear quantitative scale with a discrete output range
+            // A scale's input domain is the range of possible input data values
+            quantize = d3.scaleQuantize().domain([0, 9]).range(d3.range(5));
+
+            on(earthquakes, "graphic-draw", function (evt) {
+                var attrs = evt.graphic.attributes, Magnitude = (attrs && attrs.Magnitude) || undefined, range;
+                range = quantize(Magnitude);
+                evt.node.setAttribute("data-classification", range);
+            });
+        } else {
+            alert("Your browser does not support SVG.\nPlease user a modern web browser that supports SVG.");
+            dom.byId("legend").innerHTML = "Your browser does not support SVG.";
+        }
+        map.addLayer(earthquakes);
+        return earthquakes;*/
+    }
+    
+});
+
+d3.select("#map .loader").remove();
