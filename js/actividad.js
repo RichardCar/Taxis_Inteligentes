@@ -180,7 +180,7 @@ require([
 ], function (Map, FeatureLayer, array, dom, number, on, parser, ready) {
     parser.parse();
 
-    var map, layer, quantize;
+    var map, layer, classification;
 
     ready(function () {
         map = new Map("map", {
@@ -192,40 +192,28 @@ require([
     });
 
     function addMarks() {
-      /*
-      var marks = new FeatureLayer("url-to-marks-layer", {
+      var marks = new FeatureLayer("https://services.arcgis.com/8DAUcrpQcpyLMznu/arcgis/rest/services/TActividadTaxis/FeatureServer/0", {
         id:"marks",
         styling:false
       });
       if(marks.surfaceType === "svg") {
-        quantize = d3.scaleQuantize()
-          .domain(["null","pedido","ocupado"])
-          .range(["#4c78a8","#00a088","#f58518"]);
-      }*/
-        /*var earthquakes = new FeatureLayer("https://sampleserver3.arcgisonline.com/ArcGIS/rest/services/Earthquakes/Since_1970/MapServer/0", {
-            id:"earthquakes",
-            styling:false
+        classification = {"null":"#4c78a8","pedido":"#00a088","ocupado":"#f58518"};
+
+        on(marks, "graphic-draw", function (evt) {
+          var attrs = evt.graphic.attributes;
+          var estado = (attrs && attrs.estado) || undefined;
+          var h = (attrs && attrs.h) || undefined;
+          var color = classification[estado];
+          evt.node.setAttribute("data-classification", estado);
         });
-
-        // Apply D3's Quantitative Scales
-        if (earthquakes.surfaceType === "svg") {
-            // construct a linear quantitative scale with a discrete output range
-            // A scale's input domain is the range of possible input data values
-            quantize = d3.scaleQuantize().domain([0, 9]).range(d3.range(5));
-
-            on(earthquakes, "graphic-draw", function (evt) {
-                var attrs = evt.graphic.attributes, Magnitude = (attrs && attrs.Magnitude) || undefined, range;
-                range = quantize(Magnitude);
-                evt.node.setAttribute("data-classification", range);
-            });
-        } else {
-            alert("Your browser does not support SVG.\nPlease user a modern web browser that supports SVG.");
-            dom.byId("legend").innerHTML = "Your browser does not support SVG.";
-        }
-        map.addLayer(earthquakes);
-        return earthquakes;*/
+        //createLegend();
+      }else{
+        alert("Parece que tu navegador no soporta SVG.\nPrueba usar uno que sí lo haga, te recomendamos Google Chrome.");
+        dom.byId("legend").innerHTML = "Parece que tu navegador no soporta SVG.";
+      }
+      map.addLayer(marks);
+      return marks;
     }
-    
 });
 
 d3.select("#map .loader").remove();
