@@ -1,6 +1,6 @@
 var margin = ({top: 20, right: 0, bottom: 35, left: 40});
 var wh = d3.select("#lines").node().getBoundingClientRect().width-10;
-var rawData, mapData, nulls, pedidos, ocupados, max, x, y, p, o, n, totalMediciones, taxis;
+var rawData, mapData, etiquetas, nulls, pedidos, ocupados, max, x, y, p, o, n, totalMediciones, taxis;
 var f_estado = "all";
 var f_desde = 0;
 var f_hasta = 23;
@@ -24,7 +24,8 @@ yAxis = g => g
 
 xAxis = g => g
   .attr("transform", `translate(0,${wh - margin.bottom})`)
-  .call(d3.axisBottom(x).ticks(wh / 80).tickSizeOuter(0))
+  .attr("class","x-axis")
+  .call(d3.axisBottom(x).ticks(wh/80).tickSizeOuter(0))
   .call(g => g.select(".tick:first-of-type text").clone()
     .attr("y", 25)
     .attr("x", 10)
@@ -38,6 +39,8 @@ function loadData(){
   wh = d3.select("#lines").node().getBoundingClientRect().width-10;
   d3.csv("data/actividad.csv").then(function(data){
     rawData = data;
+    etiquetas = ["12am","1am","2am","3am","4am","5am","6am","7am","8am","9am","10am","11am","12pm","1pm","2pm","3pm","4pm","5pm","6pm","7pm","8pm","9pm","10pm","11pm"];
+
     if(f_estado == "all" || f_estado == "pedidos"){
       pedidos = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     }
@@ -143,6 +146,10 @@ function drawLines(){
       .attr("stroke-linecap", "round")
       .attr("d", line);
   }
+
+  d3.selectAll(".x-axis .tick text").each(function(d, i){
+    d3.select(this).text(etiquetas[d]);
+  });
 }
 
 d3.select("#estado")
