@@ -25,15 +25,15 @@ require([
   });
   const symbolOrigin = {
     type: "picture-marker", 
-    url: "https://adventuresinmapping.files.wordpress.com/2017/03/6.png",
-    width: "64px",
-    height: "64px"
+    url: "img/6.png",
+    width: "16px",
+    height: "16px"
   };
   const symbolDestination = {
     type: "picture-marker", 
-    url: "https://adventuresinmapping.files.wordpress.com/2017/03/3.png",
-    width: "64px",
-    height: "64px"
+    url: "img/3.png",
+    width: "32px",
+    height: "32px"
   };
   const layerDestination = new FeatureLayer({
     url: serviceTaxisDestination,
@@ -43,12 +43,12 @@ require([
   const layerOrigin = new FeatureLayer({
     url: serviceTaxisOrigen,
     visible: false,
-    renderer: {type:"simple",symbol:symbolDestination}
+    renderer: {type:"simple",symbol:symbolOrigin}
   });
 
   document.getElementById("selDepto").onchange = (d) => {
     let _select = document.getElementById("selDepto").item(document.getElementById("selDepto").selectedIndex).text;
-    alert(_select)
+    //alert(_select)
     layerDestination.definitionExpression = "LOCALIDAD1 = '" + _select + "'";
     layerOrigin.definitionExpression = "LOCALIDAD1 = '" + _select + "'";
     layerDestination.visible = true;
