@@ -127,7 +127,9 @@ function drawLines(){
   scgAppendPath(nulls, nulls_old, "#4c78a8");
 
   d3.selectAll(".x-axis .tick text").each(function(d, i){
-    d3.select(this).text(etiquetas[d]);
+    if(etiquetas[d3.select(this).text()] != undefined){
+      d3.select(this).text(etiquetas[d]);
+    }
   });
 
   function scgAppendPath(datos, datos_old, color){
