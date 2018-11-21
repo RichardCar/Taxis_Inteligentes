@@ -45,3 +45,42 @@ path[data-classification="pedido"] {
 #map .action.zoomTo span{
     display: none;
 }
+
+#estado #all{
+    border-bottom: 4px solid #444;
+}
+#estado #all.is-selected{
+    color: #fff;
+    background-color: #444;
+}
+
+#estado .button.is-selected{
+    border-bottom: 1px;
+}
+
+#estado #pedidos{
+    border-bottom: 4px solid #00a088;
+}
+#estado #pedidos.is-selected{
+    color: #fff;
+    background-color: #00a088;
+    border-color: #00a088;
+}
+
+#estado #ocupados{
+    border-bottom: 4px solid #f58518;
+}
+#estado #ocupados.is-selected{
+    color: #fff;
+    background-color: #f58518;
+    border-color: #f58518;
+}
+
+#estado #nulls{
+    border-bottom: 4px solid #4c78a8;
+}
+#estado #nulls.is-selected{
+    color: #fff;
+    background-color: #4c78a8;
+    border-color: #4c78a8;
+}

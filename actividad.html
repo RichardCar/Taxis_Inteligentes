@@ -49,77 +49,13 @@
             </section>
             <section class="section">
                 <div class="columns is-mobile">
-                    <div class="column has-text-centered is-2">
+                    <div class="column">
                         <label for="estado">Filtra por estado:</label><br>
-                        <div class="select">
-                            <select name="estado" id="estado">
-                                <option value="all">Todos</option>
-                                <option value="pedidos">Pedido</option>
-                                <option value="ocupados">Ocupado</option>
-                                <option value="nulls">Vacío</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="column has-text-centered is-2">
-                        <label for="hora1">Desde las: </label><br>
-                        <div class="select" id="desde">
-                            <select name="hora1">
-                                <option value="0" selected>00:00</option>
-                                <option value="1">01:00</option>
-                                <option value="2">02:00</option>
-                                <option value="3">03:00</option>
-                                <option value="4">04:00</option>
-                                <option value="5">05:00</option>
-                                <option value="6">06:00</option>
-                                <option value="7">07:00</option>
-                                <option value="8">08:00</option>
-                                <option value="9">09:00</option>
-                                <option value="10">10:00</option>
-                                <option value="11">11:00</option>
-                                <option value="12">12:00</option>
-                                <option value="13">13:00</option>
-                                <option value="14">14:00</option>
-                                <option value="15">15:00</option>
-                                <option value="16">16:00</option>
-                                <option value="17">17:00</option>
-                                <option value="18">18:00</option>
-                                <option value="19">19:00</option>
-                                <option value="20">20:00</option>
-                                <option value="21">21:00</option>
-                                <option value="22">22:00</option>
-                                <option value="23">23:00</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="column has-text-centered is-2">
-                        <label for="hora2">Hsta las: </label><br>
-                        <div class="select" id="hasta">
-                            <select name="hora2">
-                                <option value="0">00:59</option>
-                                <option value="1">01:59</option>
-                                <option value="2">02:59</option>
-                                <option value="3">03:59</option>
-                                <option value="4">04:59</option>
-                                <option value="5">05:59</option>
-                                <option value="6">06:59</option>
-                                <option value="7">07:59</option>
-                                <option value="8">08:59</option>
-                                <option value="9">09:59</option>
-                                <option value="10">10:59</option>
-                                <option value="11">11:59</option>
-                                <option value="12">12:59</option>
-                                <option value="13">13:59</option>
-                                <option value="14">14:59</option>
-                                <option value="15">15:59</option>
-                                <option value="16">16:59</option>
-                                <option value="17">17:59</option>
-                                <option value="18">18:59</option>
-                                <option value="19">19:59</option>
-                                <option value="20">20:59</option>
-                                <option value="21">21:59</option>
-                                <option value="22">22:59</option>
-                                <option value="23" selected>23:59</option>
-                            </select>
+                        <div class="buttons has-addons" id="estado">
+                            <span class="button is-selected" id="all">Todo</span>
+                            <span class="button" id="pedidos">Pedido</span>
+                            <span class="button" id="ocupados">Ocupado</span>
+                            <span class="button" id="nulls">Vacío</span>
                         </div>
                     </div>
                 </div>
