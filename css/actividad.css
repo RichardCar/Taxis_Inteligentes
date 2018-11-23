@@ -46,41 +46,38 @@ path[data-classification="pedido"] {
     display: none;
 }
 
-#estado #all{
-    border-bottom: 4px solid #444;
-}
-#estado #all.is-selected{
-    color: #fff;
-    background-color: #444;
-}
-
 #estado .button.is-selected{
     border-bottom: 1px;
 }
 
-#estado #pedidos{
+#estado #f_pedidos{
     border-bottom: 4px solid #00a088;
 }
-#estado #pedidos.is-selected{
+#estado #f_pedidos.is-selected{
     color: #fff;
     background-color: #00a088;
     border-color: #00a088;
 }
 
-#estado #ocupados{
+#estado #f_ocupados{
     border-bottom: 4px solid #f58518;
 }
-#estado #ocupados.is-selected{
+#estado #f_ocupados.is-selected{
     color: #fff;
     background-color: #f58518;
     border-color: #f58518;
 }
 
-#estado #nulls{
+#estado #f_nulls{
     border-bottom: 4px solid #4c78a8;
 }
-#estado #nulls.is-selected{
+#estado #f_nulls.is-selected{
     color: #fff;
     background-color: #4c78a8;
     border-color: #4c78a8;
+}
+
+.xAxis .tick line,
+.yAxis .tick line{
+    stroke: #ccc;
 }
