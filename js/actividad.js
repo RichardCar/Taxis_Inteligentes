@@ -118,12 +118,18 @@ function loadData(){
       .padding(0.1);
     
     drawBars();
+    drawMap();
+
     nulls_old = nulls;
     pedidos_old = pedidos;
     ocupados_old = ocupados;
 
     d3.select("#t_taxis").text(t_taxis);
     d3.select("#t_mediciones").text(totalMediciones);
+
+    if(active_hour != -1){
+      interaccionBarras(etiquetas[active_hour], true);
+    }
   });
 }
 
@@ -181,7 +187,6 @@ function barsSvg(data, svg, id, color){
           active_hour = i;
           interaccionBarras(etiquetas[i], true);
         }
-        console.log("active: "+active_hour);
       });
 
   svg.append("g")
@@ -207,7 +212,6 @@ function barsSvg(data, svg, id, color){
         active_hour = i;
         interaccionBarras(etiquetas[i], true);
       }
-      console.log("active: "+active_hour);
     })
     .attr("x", (d,i) => x(etiquetas[i]))
     .attr("y", height - margin.bottom)
@@ -280,9 +284,9 @@ d3.select("#estado #f_nulls")
 
 function interaccionBarras(hora, active = false){
   var i = etiquetas.indexOf(hora);
-  annotate(pedidos_svg, x(etiquetas[i]), y(pedidos[i]), pedidos[i], i, "Pedidos", active);
-  annotate(ocupados_svg, x(etiquetas[i]), y(ocupados[i]), ocupados[i], i, "Ocupados", active);
-  annotate(nulls_svg, x(etiquetas[i]), y(nulls[i]), nulls[i], i, "Vacío", active);
+  barras_annotate(pedidos_svg, x(etiquetas[i]), y(pedidos[i]), pedidos[i], i, "Pedidos", active);
+  barras_annotate(ocupados_svg, x(etiquetas[i]), y(ocupados[i]), ocupados[i], i, "Ocupados", active);
+  barras_annotate(nulls_svg, x(etiquetas[i]), y(nulls[i]), nulls[i], i, "Vacío", active);
 }
 // End Interacciones
 
@@ -292,66 +296,75 @@ d3.select("#minutes .loader").remove();
 // End Barras Minutos
 
 // Begin Mapa
-d3.select("#map").attr("style","height:"+(width-30)+"px");
+function drawMap(){
+  d3.select("#map")
+    .html("");
+  d3.select("#map").attr("style","height:"+(width-30)+"px");
 
-require([
-    "esri/map",
-    "esri/layers/FeatureLayer",
-    "dojo/_base/array",
-    "dojo/dom",
-    "dojo/number",
-    "dojo/on",
-    "dojo/parser",
-    "dojo/ready"
-], function (Map, FeatureLayer, array, dom, number, on, parser, ready) {
-    parser.parse();
+  require([
+      "esri/map",
+      "esri/layers/FeatureLayer",
+      "dojo/_base/array",
+      "dojo/dom",
+      "dojo/number",
+      "dojo/on",
+      "dojo/parser",
+      "dojo/ready"
+  ], function (Map, FeatureLayer, array, dom, number, on, parser, ready) {
+      parser.parse();
 
-    var map, layer, classification;
+      var map, layer, classification;
 
-    ready(function () {
-        map = new Map("map", {
-            basemap:"gray-vector",
-            center:[-74.1079335, 4.6264527],
-            zoom: 19
-        });
-        addMarks();
-    });
-
-    function addMarks() {
-      var marks = new FeatureLayer("https://services.arcgis.com/8DAUcrpQcpyLMznu/arcgis/rest/services/TActividadTaxis/FeatureServer/0", {
-        id:"marks",
-        styling:false
+      ready(function () {
+          map = new Map("map", {
+              basemap:"gray-vector",
+              center:[-74.1079335, 4.6264527],
+              zoom: 19
+          });
+          addMarks();
       });
-      if(marks.surfaceType === "svg") {
-        classification = {"null":"#4c78a8","pedido":"#00a088","ocupado":"#f58518"};
 
-        on(marks, "graphic-draw", function (evt) {
-          var attrs = evt.graphic.attributes;
-          var estado = (attrs && attrs.estado) || undefined;
-          var h = (attrs && attrs.h) || undefined;
-          var color = classification[estado];
-          evt.node.setAttribute("data-classification", estado);
+      function addMarks() {
+        var marks = new FeatureLayer("https://services.arcgis.com/8DAUcrpQcpyLMznu/arcgis/rest/services/TActividadTaxis/FeatureServer/0", {
+          id:"marks",
+          styling:false
         });
-        //createLegend();
-      }else{
-        alert("Parece que tu navegador no soporta SVG.\nPrueba usar uno que sí lo haga, te recomendamos Google Chrome.");
-        dom.byId("legend").innerHTML = "Parece que tu navegador no soporta SVG.";
+        if(marks.surfaceType === "svg") {
+          classification = {"null":"#4c78a8","pedido":"#00a088","ocupado":"#f58518"};
+
+          on(marks, "graphic-draw", function (evt) {
+            var attrs = evt.graphic.attributes;
+            var estado = (attrs && attrs.estado) || undefined;
+            var h = (attrs && attrs.h) || undefined;
+            var color = classification[estado];
+            evt.node.setAttribute("data-classification", estado);
+          });
+          //createLegend();
+        }else{
+          alert("Parece que tu navegador no soporta SVG.\nPrueba usar uno que sí lo haga, te recomendamos Google Chrome.");
+          dom.byId("legend").innerHTML = "Parece que tu navegador no soporta SVG.";
+        }
+        map.addLayer(marks);
+        return marks;
       }
-      map.addLayer(marks);
-      return marks;
-    }
-});
+  });
 
-d3.select("#map .loader").remove();
-
-window.onresize = function(event) {
-  loadData();
+  d3.select("#map .loader").remove();
+  const myNotification = window.createNotification({
+    closeOnClick: true,
+    displayCloseButton: true,
+    positionClass: "nfc-bottom-right",
+    showDuration: 5000,
+    theme: "info"
+  })({
+    title: "Notificación",
+    message: "El mapa ha sido actualizado"
+  });
 }
-
 // End Mapa
 
 // Begin Annotations
-function annotate(svg, posX, posY, d, i, label, active){
+function barras_annotate(svg, posX, posY, d, i, label, active){
   if(svg){
     svg.select(".annotation-group").remove();
   }
@@ -361,10 +374,11 @@ function annotate(svg, posX, posY, d, i, label, active){
   if(active){
     label = label+" (Filtro Activo)"
   }
+  var mediciones = (d == 1)? " Medición" : " Mediciones";
   annotations = [{
     note: {
       label: label,
-      title: etiquetas_ann[i]+" * "+d+" Mediciones",
+      title: etiquetas_ann[i]+" * "+d+mediciones,
       wrapSplitter: " * "
     },
     //can use x, y directly instead of data
@@ -388,3 +402,7 @@ function annotate(svg, posX, posY, d, i, label, active){
     .call(makeAnnotations)
 }
 // End Annotations
+
+window.onresize = function(event) {
+  loadData();
+}
