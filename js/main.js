@@ -29,8 +29,10 @@ d3.json(_urlData).then(datos => {
 
   sankey
     .nodes(datos.nodes)
-    .links(datos.links)
-    .layout(50);
+    .links(datos.links.sort((a,b)=>{
+      return a.value-b.value;
+          }))
+    .layout(20);
 
   // add in the links
   var link = svg.append("g").selectAll(".link")
@@ -56,30 +58,33 @@ d3.json(_urlData).then(datos => {
     .attr("transform", function (d) {
       return "translate(" + d.x + "," + d.y + ")";
     })
-    .on("click",changeMap)
-   // .on("click",(d)=>{console.log(d)})
-    .call(d3.drag()
-      .subject(function (d) {
-        return d;
-      })
-      .on("start", function () {
-        this.parentNode.appendChild(this);
-      })
-      .on("drag", dragmove)
-    //.on("click",d=>console.log(d))
-    );
+    //.on("click",changeMap)
+   .on("click",(d)=>{
+     console.log(d);
+     cambioMapa(d.name);
+    });
+    // .call(d3.drag()
+    //   .subject(function (d) {
+    //     return d;
+    //   })
+    //   .on("start", function () {
+    //     this.parentNode.appendChild(this);
+    //   })
+    //   //.on("click",changeMap)
+    //   .on("drag", dragmove)
+    // //.on("click",d=>console.log(d))
+    // );
 
   // add the rectangles for the nodes
   node.append("rect")
     .attr("height", function (d) { return d.dy; })
     .attr("width", sankey.nodeWidth())
     .style("fill", function (d) {
-      return d.color = color(d.name.replace(/ .*/, ""));
+      return d.color = color(d.region.replace(/ .*/, ""));
     })
     .style("stroke", function (d) {
       return d3.rgb(d.color).darker(2);
     })
-    .on("click",(d)=>console.log("hola"))
     .append("title")
     .text(function (d) {
       return d.name + "\n " + format(d.value);
@@ -99,6 +104,7 @@ d3.json(_urlData).then(datos => {
 
   // the function for moving the nodes
   function dragmove(d) {
+    
     d3.select(this)
       .attr("transform",
         "translate("

@@ -2,155 +2,194 @@
     "nodes":[
       {
         "name": "ANTONIO NARINO",
-        "node": 0
+        "node": 0,
+        "region": "sur"
       },
       {
         "name": "BARRIOS UNIDOS",
-        "node": 1
+        "node": 1,
+        "region": "norte"
       },
       {
         "name": "BOSA",
-        "node": 2
+        "node": 2,
+        "region": "sur"
       },
       {
         "name": "CANDELARIA",
-        "node": 3
+        "node": 3,
+        "region": "oriente"
+
       },
       {
         "name": "CHAPINERO",
-        "node": 4
+        "node": 4,
+        "region": "norte"
       },
       {
         "name": "CIUDAD BOLIVAR",
-        "node": 5
+        "node": 5,
+        "region": "sur"
       },
       {
         "name": "ENGATIVA",
-        "node": 6
+        "node": 6,
+        "region": "occidente"
       },
       {
         "name": "FONTIBON",
-        "node": 7
+        "node": 7,
+        "region": "occiedente"
       },
       {
         "name": "KENNEDY",
-        "node": 8
+        "node": 8,
+        "region": "sur"
       },
       {
         "name": "LOS MARTIRES",
-        "node": 9
+        "node": 9,
+        "region": "sur"
       },
       {
         "name": "PUENTE ARANDA",
-        "node": 10
+        "node": 10,
+        "region": "centro"
       },
       {
         "name": "RAFAEL URIBE",
-        "node": 11
+        "node": 11,
+        "region": "sur"
       },
       {
         "name": "SAN CRISTOBAL",
-        "node": 12
+        "node": 12,
+        "region": "oriente"
       },
       {
         "name": "SANTA FE",
-        "node": 13
+        "node": 13,
+        "region": "centro"
       },
       {
         "name": "SUBA",
-        "node": 14
+        "node": 14,
+        "region": "occidente"
       },
       {
         "name": "TEUSAQUILLO",
-        "node": 15
+        "node": 15,
+        "region": "centro"
       },
       {
         "name": "TUNJUELITO",
-        "node": 16
+        "node": 16,
+        "region": "sur"
       },
       {
         "name": "USAQUEN",
-        "node": 17
+        "node": 17,
+        "region": "norte"
       },
       {
         "name": "USME",
-        "node": 18
+        "node": 18,
+        "region": "sur"
       },
       {
         "name": "D_ANTONIO NARIÑO",
-        "node": 19
+        "node": 19,
+        "region": "sur"
       },
       {
         "name": "D_BARRIOS UNIDOS",
-        "node": 20
+        "node": 20,
+        "region": "sur"
       },
       {
         "name": "D_BOSA",
-        "node": 21
+        "node": 21,
+        "region": "sur"
       },
       {
         "name": "D_CANDELARIA",
-        "node": 22
+        "node": 22,
+        "region": "centro"
       },
       {
         "name": "D_CHAPINERO",
-        "node": 23
+        "node": 23,
+        "region": "norte"
       },
       {
         "name": "D_CIUDAD BOLIVAR",
-        "node": 24
+        "node": 24,
+        "region": "sur"
       },
       {
         "name": "D_ENGATIVA",
-        "node": 25
+        "node": 25,
+        "region": "occidente"
       },
       {
         "name": "D_FONTIBON",
-        "node": 26
+        "node": 26,
+        "region": "occidente"
       },
       {
         "name": "D_KENNEDY",
-        "node": 27
+        "node": 27,
+        "region": "sur"
       },
       {
         "name": "D_LOS MARTIRES",
-        "node": 28
+        "node": 28,
+        "region": "sur"
       },
       {
         "name": "D_PUENTE ARANDA",
-        "node": 29
+        "node": 29,
+        "region": "centro"
       },
       {
         "name": "D_RAFAEL URIBE URIBE",
-        "node": 30
+        "node": 30,
+        "region": "sur"
       },
       {
         "name": "D_SAN CRISTOBAL",
-        "node": 31
+        "node": 31,
+        "region": "oriente"
       },
       {
         "name": "D_SANTA FE",
-        "node": 32
+        "node": 32,
+        "region": "centro"
       },
       {
         "name": "D_SUBA",
-        "node": 33
+        "node": 33,
+        "region": "occidente"
       },
       {
         "name": "D_TEUSAQUILLO",
-        "node": 34
+        "node": 34,
+        "region": "centro"
       },
       {
         "name": "D_TUNJUELITO",
-        "node": 35
+        "node": 35,
+        "region": "sur"
       },
       {
         "name": "D_USAQUEN",
-        "node": 36
+        "node": 36,
+        "region": "norte"
       },
       {
         "name": "D_USME",
-        "node": 37
+        "node": 37,
+        "region": "sur"
       }
      ],
      "links":[
