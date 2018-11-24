@@ -3,27 +3,21 @@ var margin = ({top: 20, right: 0, bottom: 35, left: 40});
 var width = d3.select("#bars").node().getBoundingClientRect().width-10;
 var etiquetas = ["12am","1am","2am","3am","4am","5am","6am","7am","8am","9am","10am","11am","12pm","1pm","2pm","3pm","4pm","5pm","6pm","7pm","8pm","9pm","10pm","11pm"];
 var height = (width/3);
-var rawData, mapData, nulls, pedidos, ocupados, max, totalMediciones, taxis, p, o, n, x, y, numero_graficas;
+var rawData, mapData, nulls, pedidos, ocupados, max, totalMediciones, taxis, t_taxis, p, o, n, x, y, numero_graficas;
 var f_pedidos = 1;
 var f_ocupados = 1;
 var f_nulls = 1;
 
+// Annotations
+var etiquetas_ann = ["[12am - 1am)","[1am - 2am)","[2am - 3am)","[3am - 4am)","[4am - 5am)","[5am - 6am)","[6am - 7am)","[7am - 8am)","[8am - 9am)","[9am - 10am)","[10am - 11am)","[11am - 12pm)","[12pm - 1pm)","[1pm - 2pm)","[2pm - 3pm)","[3pm - 4pm)","[4pm - 5pm)","[5pm - 6pm)","[6pm - 7pm)","[7pm - 8pm)","[8pm - 9pm)","[9pm - 10pm)","[10pm - 11pm)","[11pm - 12am)"];
+var pedidos_svg, ocupados_svg, nulls_svg
+var active_hour = -1;
+var annotations, makeAnnotations;
+var type = d3.annotationCallout;
+
 loadData();
 
 // Barras horas
-xAxis = g => g
-  .attr("transform", `translate(0,${height - margin.bottom})`)
-  .attr("class", "xAxis")
-  .call(d3.axisBottom(x)
-    .tickSizeOuter(0)
-    .ticks(24)
-    .tickSize(-height))
-  .call(g => g.select(".tick:first-of-type text").clone()
-      .attr("y", 15)
-      .attr("x", -10)
-      .attr("text-anchor", "start")
-      .attr("font-weight", "bold")
-      .text("Hora del día"));;
 yAxis = g => g
   .attr("transform", `translate(${margin.left},0)`)
   .attr("class", "yAxis")
@@ -37,7 +31,20 @@ yAxis = g => g
       .style("transform","rotate(-90deg)")
       .attr("text-anchor", "start")
       .attr("font-weight", "bold")
-      .text("Número de mediciones"));;
+      .text("Número de mediciones"));
+xAxis = g => g
+  .attr("transform", `translate(0,${height - margin.bottom})`)
+  .attr("class", "xAxis")
+  .call(d3.axisBottom(x)
+    .tickSizeOuter(0)
+    .ticks(24)
+    .tickSize(-height))
+  .call(g => g.select(".tick:first-of-type text").clone()
+      .attr("y", 15)
+      .attr("x", -10)
+      .attr("text-anchor", "start")
+      .attr("font-weight", "bold")
+      .text("Hora del día"));
 
 function loadData(){
   width = d3.select("#bars").node().getBoundingClientRect().width-10;
@@ -64,6 +71,10 @@ function loadData(){
 
     max = 0;
     taxis = [];
+    t_taxis = 0;
+    p = 0;
+    o = 0;
+    n = 0;
 
     data.forEach(function(d, i){
       if(d.h >= 0 && d.h <= 23){
@@ -71,6 +82,7 @@ function loadData(){
           taxis[d.tid] += 1;
         }else{
           taxis[d.tid] = 1;
+          t_taxis += 1;
         }
         if(d.estado == "pedido" && (f_pedidos == 1)){
           pedidos[d.h] += 1;
@@ -109,6 +121,9 @@ function loadData(){
     nulls_old = nulls;
     pedidos_old = pedidos;
     ocupados_old = ocupados;
+
+    d3.select("#t_taxis").text(t_taxis);
+    d3.select("#t_mediciones").text(totalMediciones);
   });
 }
 
@@ -121,81 +136,91 @@ function drawBars(){
     .html("");
 
   if(f_pedidos == 1){
-    const pedidos_svg = d3.select("#pedidos")
-      .append("svg")
-        .attr("width", width)
-        .attr("height", height);
-
-    pedidos_svg.append("g")
-      .call(xAxis);
-    
-    pedidos_svg.append("g")
-      .call(yAxis);
-      
-    pedidos_svg.append("g")
-      .attr("fill", "#00a088")
-    .selectAll("rect").data(pedidos).enter().append("rect")
-      .attr("x", (d,i) => x(etiquetas[i]))
-      .attr("y", height - margin.bottom)
-      .attr("width", x.bandwidth())
-      .attr("height", 0)
-      .transition()
-      .duration(1000)
-      .attr("y", d => y(d))
-      .attr("height", d => y(0) - y(d));
+    pedidos_svg = barsSvg(pedidos, pedidos_svg, "#pedidos", "#00a088");
   }
 
   if(f_ocupados == 1){
-    const ocupados_svg = d3.select("#ocupados")
-      .append("svg")
-        .attr("width", width)
-        .attr("height", height);
-
-    ocupados_svg.append("g")
-      .call(xAxis);
-    
-    ocupados_svg.append("g")
-      .call(yAxis);
-      
-    ocupados_svg.append("g")
-      .attr("fill", "#f58518")
-    .selectAll("rect").data(ocupados).enter().append("rect")
-      .attr("x", (d,i) => x(etiquetas[i]))
-      .attr("y", height - margin.bottom)
-      .attr("width", x.bandwidth())
-      .transition()
-      .duration(1000)
-      .attr("y", d => y(d))
-      .attr("height", d => y(0) - y(d));
+    ocupados_svg = barsSvg(ocupados, ocupados_svg, "#ocupados", "#f58518");
   }
 
   if(f_nulls == 1){
-    const nulls_svg = d3.select("#nulls")
-      .append("svg")
-        .attr("width", width)
-        .attr("height", height);
-    
-    nulls_svg.append("g")
-      .call(xAxis);
-    
-    nulls_svg.append("g")
-      .call(yAxis);
-
-    nulls_svg.append("g")
-      .attr("fill", "#4c78a8")
-    .selectAll("rect").data(nulls).enter().append("rect")
-      .attr("x", (d,i) => x(etiquetas[i]))
-      .attr("y", height - margin.bottom)
-      .attr("width", x.bandwidth())
-      .transition()
-      .duration(1000)
-      .attr("y", d => y(d))
-      .attr("height", d => y(0) - y(d));
+    nulls_svg = barsSvg(nulls, nulls_svg, "#nulls", "#4c78a8");
   }
 
   d3.select("#bars .loader").remove();
 }
 
+function barsSvg(data, svg, id, color){
+  svg = d3.select(id)
+    .append("svg")
+      .attr("width", width)
+      .attr("height", height);
+  
+  svg.append("g")
+    .call(yAxis);
+  svg.append("g")
+    .call(xAxis)
+      .selectAll(".tick")
+      .on("mouseover", function(d,i){
+        if(active_hour == -1){
+          interaccionBarras(d);
+        }
+      })
+      .on("mouseout", function(d,i){
+        if(active_hour == -1){
+          pedidos_svg.select(".annotation-group").remove();
+          ocupados_svg.select(".annotation-group").remove();
+          nulls_svg.select(".annotation-group").remove();
+        }
+      })
+      .on("click", function(d,i){
+        if(active_hour == i){
+          active_hour = -1;
+          interaccionBarras(etiquetas[i], false);
+        }else{
+          active_hour = i;
+          interaccionBarras(etiquetas[i], true);
+        }
+        console.log("active: "+active_hour);
+      });
+
+  svg.append("g")
+    .attr("fill", color)
+  .selectAll("rect").data(data).enter().append("rect")
+    .on("mouseover", function(d, i){
+      if(active_hour == -1){
+        interaccionBarras(etiquetas[i]);
+      }
+    })
+    .on("mouseout", function(d,i){
+      if(active_hour == -1){
+        pedidos_svg.select(".annotation-group").remove();
+        ocupados_svg.select(".annotation-group").remove();
+        nulls_svg.select(".annotation-group").remove();
+      }
+    })
+    .on("click", function(d,i){
+      if(active_hour == i){
+        active_hour = -1;
+        interaccionBarras(etiquetas[i], false);
+      }else{
+        active_hour = i;
+        interaccionBarras(etiquetas[i], true);
+      }
+      console.log("active: "+active_hour);
+    })
+    .attr("x", (d,i) => x(etiquetas[i]))
+    .attr("y", height - margin.bottom)
+    .attr("width", x.bandwidth())
+    .transition()
+    .duration(1000)
+    .attr("y", d => y(d))
+    .attr("height", d => y(0) - y(d));
+
+  return svg;
+}
+
+// Begin Interacciones
 d3.select("#estado #f_pedidos")
   .on("click", function(){
     if(!d3.select(this).classed("is-selected")){
@@ -252,10 +277,21 @@ d3.select("#estado #f_nulls")
     }
     loadData();
   });
-// Barras minutos
-//d3.select("#minutes .loader").remove();
 
-// Mapa
+function interaccionBarras(hora, active = false){
+  var i = etiquetas.indexOf(hora);
+  annotate(pedidos_svg, x(etiquetas[i]), y(pedidos[i]), pedidos[i], i, "Pedidos", active);
+  annotate(ocupados_svg, x(etiquetas[i]), y(ocupados[i]), ocupados[i], i, "Ocupados", active);
+  annotate(nulls_svg, x(etiquetas[i]), y(nulls[i]), nulls[i], i, "Vacío", active);
+}
+// End Interacciones
+
+// Begin Barras Minutos
+d3.select("#minutes .loader").remove();
+
+// End Barras Minutos
+
+// Begin Mapa
 d3.select("#map").attr("style","height:"+(width-30)+"px");
 
 require([
@@ -311,3 +347,44 @@ d3.select("#map .loader").remove();
 window.onresize = function(event) {
   loadData();
 }
+
+// End Mapa
+
+// Begin Annotations
+function annotate(svg, posX, posY, d, i, label, active){
+  if(svg){
+    svg.select(".annotation-group").remove();
+  }
+  posX += x.bandwidth()/2;
+
+  var color = (active)? "#ff3860" : "#209cee";
+  if(active){
+    label = label+" (Filtro Activo)"
+  }
+  annotations = [{
+    note: {
+      label: label,
+      title: etiquetas_ann[i]+" * "+d+" Mediciones",
+      wrapSplitter: " * "
+    },
+    //can use x, y directly instead of data
+    x: posX,
+    y: posY,
+    dy: (height/2)-posY-10,
+    dx: ((posX + 50) >= (width-160))? -50 : 50,
+    width: 160,
+    color: color
+  }];
+
+  makeAnnotations = d3.annotation()
+    .editMode(false)
+    .notePadding(5)
+    .type(type)
+    .annotations(annotations)
+
+  var ac = (active)? " active" : "";
+  svg.append("g")
+    .attr("class", "annotation-group"+ac)
+    .call(makeAnnotations)
+}
+// End Annotations

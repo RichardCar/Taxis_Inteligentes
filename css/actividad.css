@@ -79,5 +79,10 @@ path[data-classification="pedido"] {
 
 .xAxis .tick line,
 .yAxis .tick line{
-    stroke: #ccc;
+    stroke: #ddd;
+}
+
+.annotation-note-label,
+.annotation-note-title{
+    text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 5px #fff, 0 0 10px #fff, 0 0 5px #fff, 0 0 10px #fff;
 }
