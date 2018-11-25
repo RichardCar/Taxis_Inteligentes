@@ -82,6 +82,11 @@ path[data-classification="pedido"] {
     stroke: #ddd;
 }
 
+.xAxis .tick text,
+#bars .bar{
+    cursor: pointer;
+}
+
 .annotation-note-label,
 .annotation-note-title{
     text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 5px #fff, 0 0 10px #fff, 0 0 5px #fff, 0 0 10px #fff;

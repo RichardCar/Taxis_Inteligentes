@@ -191,7 +191,11 @@ function barsSvg(data, svg, id, color){
 
   svg.append("g")
     .attr("fill", color)
-  .selectAll("rect").data(data).enter().append("rect")
+    .selectAll("rect")
+    .data(data)
+    .enter()
+    .append("rect")
+    .attr("class", "bar")
     .on("mouseover", function(d, i){
       if(active_hour == -1){
         interaccionBarras(etiquetas[i]);
