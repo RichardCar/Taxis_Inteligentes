@@ -77,12 +77,12 @@ path[data-classification="pedido"] {
     border-color: #4c78a8;
 }
 
-.xAxis .tick line,
+.xAxis_estados .tick line,
 .yAxis .tick line{
     stroke: #ddd;
 }
 
-.xAxis .tick text,
+.xAxis_estados .tick text,
 #bars .bar{
     cursor: pointer;
 }

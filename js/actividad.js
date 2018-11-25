@@ -1,12 +1,17 @@
 //Global
 var margin = ({top: 20, right: 0, bottom: 35, left: 40});
 var width = d3.select("#bars").node().getBoundingClientRect().width-10;
-var etiquetas = ["12am","1am","2am","3am","4am","5am","6am","7am","8am","9am","10am","11am","12pm","1pm","2pm","3pm","4pm","5pm","6pm","7pm","8pm","9pm","10pm","11pm"];
 var height = (width/3);
 var rawData, mapData, nulls, pedidos, ocupados, max, totalMediciones, taxis, t_taxis, p, o, n, x, y, numero_graficas;
+
+//Barras
+var etiquetas = ["12am","1am","2am","3am","4am","5am","6am","7am","8am","9am","10am","11am","12pm","1pm","2pm","3pm","4pm","5pm","6pm","7pm","8pm","9pm","10pm","11pm"];
 var f_pedidos = 1;
 var f_ocupados = 1;
 var f_nulls = 1;
+
+//Barras Minutos
+var minutos = {"pedido": 0, "ocupado": 0, "null": 0};
 
 // Annotations
 var etiquetas_ann = ["[12am - 1am)","[1am - 2am)","[2am - 3am)","[3am - 4am)","[4am - 5am)","[5am - 6am)","[6am - 7am)","[7am - 8am)","[8am - 9am)","[9am - 10am)","[10am - 11am)","[11am - 12pm)","[12pm - 1pm)","[1pm - 2pm)","[2pm - 3pm)","[3pm - 4pm)","[4pm - 5pm)","[5pm - 6pm)","[6pm - 7pm)","[7pm - 8pm)","[8pm - 9pm)","[9pm - 10pm)","[10pm - 11pm)","[11pm - 12am)"];
@@ -32,9 +37,9 @@ yAxis = g => g
       .attr("text-anchor", "start")
       .attr("font-weight", "bold")
       .text("Número de mediciones"));
-xAxis = g => g
+xAxis_estados = g => g
   .attr("transform", `translate(0,${height - margin.bottom})`)
-  .attr("class", "xAxis")
+  .attr("class", "xAxis_estados")
   .call(d3.axisBottom(x)
     .tickSizeOuter(0)
     .ticks(24)
@@ -76,6 +81,11 @@ function loadData(){
     o = 0;
     n = 0;
 
+    var last_carrera = 0;
+    var last_estado = "";
+    var inicio_minutos = 0;
+    var fin_minutos = 0;
+    
     data.forEach(function(d, i){
       if(d.h >= 0 && d.h <= 23){
         if(typeof taxis[d.tid] != "undefined"){
@@ -106,7 +116,22 @@ function loadData(){
           }
         }
       }
+
+      if(last_carrera == 0 && last_estado == ""){
+        last_carrera = d.cid;
+        last_estado = d.estado;
+        inicio_minutos = getMinutes(d.hora);
+        fin_minutos = getMinutes(d.hora);
+      }
+      if(last_carrera != d.cid || last_estado != d.estado){
+        minutos[last_estado] += (fin_minutos - inicio_minutos);
+        last_carrera = d.cid;
+        inicio_minutos = getMinutes(d.hora);
+      }
+      fin_minutos = getMinutes(d.hora);
+      last_estado = d.estado;
     });
+ 
     totalMediciones = p+o+n;
 
     y = d3.scaleLinear()
@@ -165,7 +190,7 @@ function barsSvg(data, svg, id, color){
   svg.append("g")
     .call(yAxis);
   svg.append("g")
-    .call(xAxis)
+    .call(xAxis_estados)
       .selectAll(".tick")
       .on("mouseover", function(d,i){
         if(active_hour == -1){
@@ -295,6 +320,27 @@ function interaccionBarras(hora, active = false){
 // End Interacciones
 
 // Begin Barras Minutos
+
+
+function getMinutes(hour){
+  var arr = hour.split(":");
+  var m1 = 0;
+  var m2 = 0;
+
+  if(parseInt(arr[0][0]) == 0){
+    m1 = parseInt(arr[0][1]) * 60;
+  }else{
+    m1 = parseInt(arr[0]) * 60;
+  }
+
+  if(parseInt(arr[1][0]) == 0){
+    m2 = parseInt(arr[1][1]);
+  }else{
+    m2 = parseInt(arr[1]);
+  }
+  
+  return m1 + m2;
+}
 d3.select("#minutes .loader").remove();
 
 // End Barras Minutos
