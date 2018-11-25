@@ -78,7 +78,7 @@ path[data-classification="pedido"] {
 }
 
 .xAxis_estados .tick line,
-.yAxis .tick line{
+.yAxis_estados .tick line{
     stroke: #ddd;
 }
 

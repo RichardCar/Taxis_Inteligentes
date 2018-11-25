@@ -23,9 +23,9 @@ var type = d3.annotationCallout;
 loadData();
 
 // Barras horas
-yAxis = g => g
+yAxis_estados = g => g
   .attr("transform", `translate(${margin.left},0)`)
-  .attr("class", "yAxis")
+  .attr("class", "yAxis_estados")
   .call(d3.axisLeft(y)
     .tickSizeOuter(0)
     .tickSize(-width))
@@ -87,6 +87,7 @@ function loadData(){
     var fin_minutos = 0;
     
     data.forEach(function(d, i){
+      var to_count = 0;
       if(d.h >= 0 && d.h <= 23){
         if(typeof taxis[d.tid] != "undefined"){
           taxis[d.tid] += 1;
@@ -100,6 +101,7 @@ function loadData(){
           if(max < pedidos[d.h]){
             max = pedidos[d.h];
           }
+          to_count = 1;
         }
         if(d.estado == "ocupado" && (f_ocupados == 1)){
           ocupados[d.h] += 1;
@@ -107,6 +109,7 @@ function loadData(){
           if(max < ocupados[d.h]){
             max = ocupados[d.h];
           }
+          to_count = 1;
         }
         if(d.estado == "null" && (f_nulls == 1)){
           nulls[d.h] += 1;
@@ -114,24 +117,27 @@ function loadData(){
           if(max < nulls[d.h]){
             max = nulls[d.h];
           }
+          to_count = 1;
         }
       }
 
-      if(last_carrera == 0 && last_estado == ""){
-        last_carrera = d.cid;
-        last_estado = d.estado;
-        inicio_minutos = getMinutes(d.hora);
+      if(to_count == 1){
+        if(last_carrera == 0 && last_estado == ""){
+          last_carrera = d.cid;
+          last_estado = d.estado;
+          inicio_minutos = getMinutes(d.hora);
+          fin_minutos = getMinutes(d.hora);
+        }
+        if(last_carrera != d.cid || last_estado != d.estado){
+          minutos[last_estado] += (fin_minutos - inicio_minutos);
+          last_carrera = d.cid;
+          inicio_minutos = getMinutes(d.hora);
+        }
         fin_minutos = getMinutes(d.hora);
+        last_estado = d.estado;
       }
-      if(last_carrera != d.cid || last_estado != d.estado){
-        minutos[last_estado] += (fin_minutos - inicio_minutos);
-        last_carrera = d.cid;
-        inicio_minutos = getMinutes(d.hora);
-      }
-      fin_minutos = getMinutes(d.hora);
-      last_estado = d.estado;
     });
- 
+    
     totalMediciones = p+o+n;
 
     y = d3.scaleLinear()
@@ -143,6 +149,7 @@ function loadData(){
       .padding(0.1);
     
     drawBars();
+    drawHorizontalBars();
     drawMap();
 
     nulls_old = nulls;
@@ -188,7 +195,7 @@ function barsSvg(data, svg, id, color){
       .attr("height", height);
   
   svg.append("g")
-    .call(yAxis);
+    .call(yAxis_estados);
   svg.append("g")
     .call(xAxis_estados)
       .selectAll(".tick")
@@ -253,74 +260,7 @@ function barsSvg(data, svg, id, color){
   return svg;
 }
 
-// Begin Interacciones
-d3.select("#estado #f_pedidos")
-  .on("click", function(){
-    if(!d3.select(this).classed("is-selected")){
-      d3.select(this).classed("is-selected", true);
-      f_pedidos = 1;
-    }else{
-      d3.select(this).classed("is-selected", false);
-      f_pedidos = 0;
-
-      if(f_nulls == f_pedidos && f_nulls == f_ocupados){
-        d3.select("#f_nulls").classed("is-selected", true);
-        d3.select("#f_pedidos").classed("is-selected", true);
-        d3.select("#f_ocupados").classed("is-selected", true);
-        f_nulls = 1; f_ocupados = 1; f_pedidos = 1;
-      }
-    }
-    loadData();
-  });
-
-d3.select("#estado #f_ocupados")
-  .on("click", function(){
-    if(!d3.select(this).classed("is-selected")){
-      d3.select(this).classed("is-selected", true);
-      f_ocupados = 1;
-    }else{
-      d3.select(this).classed("is-selected", false);
-      f_ocupados = 0;
-
-      if(f_nulls == f_pedidos && f_nulls == f_ocupados){
-        d3.select("#f_nulls").classed("is-selected", true);
-        d3.select("#f_pedidos").classed("is-selected", true);
-        d3.select("#f_ocupados").classed("is-selected", true);
-        f_nulls = 1; f_ocupados = 1; f_pedidos = 1;
-      }
-    }
-    loadData();
-  });
-
-d3.select("#estado #f_nulls")
-  .on("click", function(){
-    if(!d3.select(this).classed("is-selected")){
-      d3.select(this).classed("is-selected", true);
-      f_nulls = 1;
-    }else{
-      d3.select(this).classed("is-selected", false);
-      f_nulls = 0;
-
-      if(f_nulls == f_pedidos && f_nulls == f_ocupados){
-        d3.select("#f_nulls").classed("is-selected", true);
-        d3.select("#f_pedidos").classed("is-selected", true);
-        d3.select("#f_ocupados").classed("is-selected", true);
-        f_nulls = 1; f_ocupados = 1; f_pedidos = 1;
-      }
-    }
-    loadData();
-  });
-
-function interaccionBarras(hora, active = false){
-  var i = etiquetas.indexOf(hora);
-  barras_annotate(pedidos_svg, x(etiquetas[i]), y(pedidos[i]), pedidos[i], i, "Pedidos", active);
-  barras_annotate(ocupados_svg, x(etiquetas[i]), y(ocupados[i]), ocupados[i], i, "Ocupados", active);
-  barras_annotate(nulls_svg, x(etiquetas[i]), y(nulls[i]), nulls[i], i, "Vacío", active);
-}
-// End Interacciones
-
 // Begin Barras Minutos
-
 
 function getMinutes(hour){
   var arr = hour.split(":");
@@ -340,6 +280,128 @@ function getMinutes(hour){
   }
   
   return m1 + m2;
+}
+
+function drawHorizontalBars(){
+  var max_minutos = 0;
+  if(max_minutos < minutos["pedido"] && f_pedidos == 1){
+    max_minutos = minutos["pedido"];
+  }
+  if(max_minutos < minutos["ocupado"] && f_ocupados == 1){
+    max_minutos = minutos["ocupado"];
+  }
+  if(max_minutos < minutos["null"] && f_nulls == 1){
+    max_minutos = minutos["null"];
+  }
+
+  var domain = [];
+  if(f_nulls == 1){
+    domain.push("Vacío");
+  }
+  if(f_ocupados == 1){
+    domain.push("Ocupado");
+  }
+  if(f_pedidos == 1){
+    domain.push("Pedido");
+  }
+
+  const minX = d3.scaleLinear()
+    .domain([0, max_minutos]).nice()
+    .range([margin.left+10, width - margin.right - 10]);
+  const minY = d3.scaleBand()
+    .domain(domain)
+    .range([width - margin.bottom, margin.top])
+    .padding(0.1);
+  const xAxis = g => g
+    .attr("transform", `translate(0,${width - margin.bottom+10})`)
+    .attr("class","yAxis_estados")
+    .call(d3.axisBottom(minX)
+      .ticks(10)
+      .tickSizeOuter(0)
+      .tickSize(-width))
+    .call(g => g.select(".domain").remove())
+    .call(g => g.select(".tick:first-of-type text").clone()
+      .attr("y", 15)
+      .attr("x", -10)
+      .attr("text-anchor", "start")
+      .attr("font-weight", "bold")
+      .text("Minutos"));
+  var yAxis = g => g
+      .attr("transform", `translate(${margin.left+10},0)`)
+      .call(d3.axisLeft(minY).tickSizeOuter(0));
+
+  d3.select("#minutes").html("");
+
+  const svg = d3.select("#minutes")
+    .append("svg")
+      .attr("width", width)
+      .attr("height", width);
+    
+  svg.append("g")
+    .call(xAxis);
+  svg.append("g")
+    .call(yAxis);
+
+  if(f_pedidos == 1){
+    svg.append("g")
+      .attr("fill", "#00a088")
+      .append("rect")
+      .attr("x", minX(0))
+      .attr("y", d => minY("Pedido"))
+      .attr("height", minY.bandwidth())
+      .attr("width", 0)
+      .transition()
+      .duration(1000)
+      .attr("width", d => minX(minutos["pedido"]) - minX(0));
+    svg.append("g")
+      .attr("fill", "white")
+      .attr("text-anchor", "end")
+      .style("font", "1.51m sans-serif")
+      .append("text")
+      .attr("x", d =>  minX(minutos["pedido"]) - 5)
+      .attr("y", d => minY("Pedido") + minY.bandwidth() - 10)
+      .html(d => minutos["pedido"]+" Minutos");
+  }
+  if(f_ocupados == 1){
+    svg.append("g")
+      .attr("fill", "#f58518")
+      .append("rect")
+      .attr("x", minX(0))
+      .attr("y", d => minY("Ocupado"))
+      .attr("height", minY.bandwidth())
+      .attr("width", 0)
+      .transition()
+      .duration(1000)
+      .attr("width", d => minX(minutos["ocupado"]) - minX(0));
+    svg.append("g")
+      .attr("fill", "white")
+      .attr("text-anchor", "end")
+      .style("font", "1.51m sans-serif")
+      .append("text")
+      .attr("x", d =>  minX(minutos["ocupado"]) - 5)
+      .attr("y", d => minY("Ocupado") + minY.bandwidth() - 10)
+      .text(d => minutos["ocupado"]+" Minutos");
+  }
+  if(f_nulls == 1){
+    svg.append("g")
+      .attr("fill", "#4c78a8")
+      .append("rect")
+      .attr("x", minX(0))
+      .attr("y", d => minY("Vacío"))
+      .attr("height", minY.bandwidth())
+      .attr("width", 0)
+      .transition()
+      .duration(1000)
+      .attr("width", d => minX(minutos["null"]) - minX(0));
+      svg.append("g")
+      .attr("fill", "white")
+      .attr("text-anchor", "end")
+      .style("font", "1.51m sans-serif")
+      .append("text")
+      .attr("x", d =>  minX(minutos["null"]) - 5)
+      .attr("y", d => minY("Vacío") + minY.bandwidth() - 10)
+      .text(d => minutos["null"]+" Minutos");
+  }
 }
 d3.select("#minutes .loader").remove();
 
@@ -412,6 +474,72 @@ function drawMap(){
   });
 }
 // End Mapa
+
+// Begin Interacciones
+d3.select("#estado #f_pedidos")
+  .on("click", function(){
+    if(!d3.select(this).classed("is-selected")){
+      d3.select(this).classed("is-selected", true);
+      f_pedidos = 1;
+    }else{
+      d3.select(this).classed("is-selected", false);
+      f_pedidos = 0;
+
+      if(f_nulls == f_pedidos && f_nulls == f_ocupados){
+        d3.select("#f_nulls").classed("is-selected", true);
+        d3.select("#f_pedidos").classed("is-selected", true);
+        d3.select("#f_ocupados").classed("is-selected", true);
+        f_nulls = 1; f_ocupados = 1; f_pedidos = 1;
+      }
+    }
+    loadData();
+  });
+
+d3.select("#estado #f_ocupados")
+  .on("click", function(){
+    if(!d3.select(this).classed("is-selected")){
+      d3.select(this).classed("is-selected", true);
+      f_ocupados = 1;
+    }else{
+      d3.select(this).classed("is-selected", false);
+      f_ocupados = 0;
+
+      if(f_nulls == f_pedidos && f_nulls == f_ocupados){
+        d3.select("#f_nulls").classed("is-selected", true);
+        d3.select("#f_pedidos").classed("is-selected", true);
+        d3.select("#f_ocupados").classed("is-selected", true);
+        f_nulls = 1; f_ocupados = 1; f_pedidos = 1;
+      }
+    }
+    loadData();
+  });
+
+d3.select("#estado #f_nulls")
+  .on("click", function(){
+    if(!d3.select(this).classed("is-selected")){
+      d3.select(this).classed("is-selected", true);
+      f_nulls = 1;
+    }else{
+      d3.select(this).classed("is-selected", false);
+      f_nulls = 0;
+
+      if(f_nulls == f_pedidos && f_nulls == f_ocupados){
+        d3.select("#f_nulls").classed("is-selected", true);
+        d3.select("#f_pedidos").classed("is-selected", true);
+        d3.select("#f_ocupados").classed("is-selected", true);
+        f_nulls = 1; f_ocupados = 1; f_pedidos = 1;
+      }
+    }
+    loadData();
+  });
+
+function interaccionBarras(hora, active = false){
+  var i = etiquetas.indexOf(hora);
+  barras_annotate(pedidos_svg, x(etiquetas[i]), y(pedidos[i]), pedidos[i], i, "Pedidos", active);
+  barras_annotate(ocupados_svg, x(etiquetas[i]), y(ocupados[i]), ocupados[i], i, "Ocupados", active);
+  barras_annotate(nulls_svg, x(etiquetas[i]), y(nulls[i]), nulls[i], i, "Vacío", active);
+}
+// End Interacciones
 
 // Begin Annotations
 function barras_annotate(svg, posX, posY, d, i, label, active){
