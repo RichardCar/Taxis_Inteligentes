@@ -52,6 +52,16 @@ div.vega-actions-wrapper{
   -webkit-animation: load8 1.1s infinite linear;
   animation: load8 1.1s infinite linear;
 }
+#team .card{
+  margin: 15px 50px;
+}
+
+@media only screen and (max-width: 1088px) {
+  #team .card{
+    margin: 15px auto;
+  }
+}
+
 @-webkit-keyframes load8 {
   0% {
     -webkit-transform: rotate(0deg);
