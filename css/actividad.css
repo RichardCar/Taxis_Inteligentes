@@ -1,62 +1,11 @@
-path[data-classification="null"] {
-    fill: none;
-    stroke: #4c78a8;
-    stroke-width: 10;
-    stroke-opacity: 0.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-path[data-classification="ocupado"] {
-    fill: none;
-    stroke: #f58518;
-    stroke-width: 10;
-    stroke-opacity: 0.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-path[data-classification="pedido"] {
-    fill: none;
-    stroke: #00a088;
-    stroke-width: 10;
-    stroke-opacity: 0.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-#legend svg {
-    vertical-align: middle;
-}
+/* MAPA */
 #map{
     position: relative;
 }
-#map #legend{
-    font-family: Lucida Grande,Helvetica,Arial,Verdana,sans-serif;
-    font-size: 14px; position: absolute;
-    right: 30px;
-    top: 20px;
-    z-index: 100;
-    padding: 5px;
-    border: 2px solid #666666;
-    border-radius: 5px;
-    background-color: white;
-}
-#map .action.zoomTo span{
-    display: none;
-}
 
+/* Barras */
 #estado .button.is-selected{
     border-bottom: 1px;
-}
-
-#estado #f_pedidos{
-    border-bottom: 4px solid #00a088;
-}
-#estado #f_pedidos.is-selected{
-    color: #fff;
-    background-color: #00a088;
-    border-color: #00a088;
 }
 
 #estado #f_ocupados{
@@ -68,10 +17,10 @@ path[data-classification="pedido"] {
     border-color: #f58518;
 }
 
-#estado #f_nulls{
+#estado #f_disponibles{
     border-bottom: 4px solid #4c78a8;
 }
-#estado #f_nulls.is-selected{
+#estado #f_disponibles.is-selected{
     color: #fff;
     background-color: #4c78a8;
     border-color: #4c78a8;
@@ -87,7 +36,11 @@ path[data-classification="pedido"] {
     cursor: pointer;
 }
 
-.annotation-note-label,
-.annotation-note-title{
-    text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 5px #fff, 0 0 10px #fff, 0 0 5px #fff, 0 0 10px #fff;
+.annotation-note-bg{
+    fill-opacity: 0.75;
+}
+
+#filters{
+    background-color: #fff;
+    z-index: 999;
 }

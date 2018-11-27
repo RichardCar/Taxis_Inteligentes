@@ -1,21 +1,23 @@
 //Global
 var margin = ({top: 20, right: 0, bottom: 35, left: 40});
-var width = d3.select("#bars").node().getBoundingClientRect().width-10;
+var width = d3.select("#bars").node().getBoundingClientRect().width;
 var height = (width/3);
-var rawData, mapData, nulls, pedidos, ocupados, max, totalMediciones, taxis, t_taxis, p, o, n, x, y, numero_graficas;
+var rawData, mapData, disponibles, ocupados, max, totalMediciones, taxis, t_taxis, p, o, n, x, y, numero_graficas;
 
 //Barras
 var etiquetas = ["12am","1am","2am","3am","4am","5am","6am","7am","8am","9am","10am","11am","12pm","1pm","2pm","3pm","4pm","5pm","6pm","7pm","8pm","9pm","10pm","11pm"];
-var f_pedidos = 1;
+var f_disponibles = 1;
 var f_ocupados = 1;
-var f_nulls = 1;
 
 //Barras Minutos
-var minutos = {"pedido": 0, "ocupado": 0, "null": 0};
+var minutos = {"disponible": 0, "ocupado": 0};
+
+//Mapa
+var origenes = [];
 
 // Annotations
 var etiquetas_ann = ["[12am - 1am)","[1am - 2am)","[2am - 3am)","[3am - 4am)","[4am - 5am)","[5am - 6am)","[6am - 7am)","[7am - 8am)","[8am - 9am)","[9am - 10am)","[10am - 11am)","[11am - 12pm)","[12pm - 1pm)","[1pm - 2pm)","[2pm - 3pm)","[3pm - 4pm)","[4pm - 5pm)","[5pm - 6pm)","[6pm - 7pm)","[7pm - 8pm)","[8pm - 9pm)","[9pm - 10pm)","[10pm - 11pm)","[11pm - 12am)"];
-var pedidos_svg, ocupados_svg, nulls_svg
+var disponibles_svg, ocupados_svg;
 var active_hour = -1;
 var annotations, makeAnnotations;
 var type = d3.annotationCallout;
@@ -51,17 +53,14 @@ xAxis_estados = g => g
       .attr("font-weight", "bold")
       .text("Hora del día"));
 
-function loadData(){
-  width = d3.select("#bars").node().getBoundingClientRect().width-10;
+function loadData(click_hora = false){
+  width = d3.select("#bars").node().getBoundingClientRect().width;
   numero_graficas = 0;
 
-  if(f_pedidos){
+  if(f_disponibles){
     numero_graficas += 1;
   }
   if(f_ocupados){
-    numero_graficas += 1;
-  }
-  if(f_nulls){
     numero_graficas += 1;
   }
 
@@ -70,10 +69,9 @@ function loadData(){
   d3.csv("data/actividad.csv").then(function(data){
     rawData = data;
     
-    pedidos = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    disponibles = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     ocupados = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    nulls = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    minutos = {"pedido": 0, "ocupado": 0, "null": 0};
+    minutos = {"disponible": 0, "ocupado": 0};
 
     max = 0;
     taxis = [];
@@ -82,10 +80,8 @@ function loadData(){
     o = 0;
     n = 0;
 
-    var last_carrera = 0;
-    var last_estado = "";
-    var inicio_minutos = 0;
-    var fin_minutos = 0;
+    var min_ocupados = [];
+    var min_disponibles = [];
     
     data.forEach(function(d, i){
       var to_count = 0;
@@ -96,11 +92,11 @@ function loadData(){
           taxis[d.tid] = 1;
           t_taxis += 1;
         }
-        if(d.estado == "pedido" && (f_pedidos == 1)){
-          pedidos[d.h] += 1;
+        if(d.estado == "disponible" && (f_disponibles == 1)){
+          disponibles[d.h] += 1;
           p += 1;
-          if(max < pedidos[d.h]){
-            max = pedidos[d.h];
+          if(max < disponibles[d.h]){
+            max = disponibles[d.h];
           }
           to_count = 1;
         }
@@ -112,33 +108,24 @@ function loadData(){
           }
           to_count = 1;
         }
-        if(d.estado == "null" && (f_nulls == 1)){
-          nulls[d.h] += 1;
-          n += 1;
-          if(max < nulls[d.h]){
-            max = nulls[d.h];
-          }
-          to_count = 1;
-        }
       }
-
-      if(to_count == 1){
-        if(last_carrera == 0 && last_estado == ""){
-          last_carrera = d.cid;
-          last_estado = d.estado;
-          inicio_minutos = getMinutes(d.hora);
-          fin_minutos = getMinutes(d.hora);
+      if(active_hour == -1 || active_hour == d.h){
+        if(to_count == 1){
+          if(d.estado == "ocupado"){
+            min_ocupados[d.tid+d.hora] = 1;
+          }else{
+            min_disponibles[d.tid+d.hora] = 1;
+          }
         }
-        if(last_carrera != d.cid || last_estado != d.estado){
-          minutos[last_estado] += (fin_minutos - inicio_minutos);
-          last_carrera = d.cid;
-          inicio_minutos = getMinutes(d.hora);
-        }
-        fin_minutos = getMinutes(d.hora);
-        last_estado = d.estado;
       }
     });
     
+    for(var propertyName in min_ocupados){     
+      minutos["ocupado"] += 1;
+    }
+    for(var propertyName in min_disponibles){     
+      minutos["disponible"] += 1;
+    }
     totalMediciones = p+o+n;
 
     y = d3.scaleLinear()
@@ -149,12 +136,16 @@ function loadData(){
       .range([margin.left, width - margin.right])
       .padding(0.1);
     
-    drawBars();
-    drawHorizontalBars();
-    drawMap();
+    if(click_hora == false){
+      drawBars();
+      drawHorizontalBars();
+      drawMap();
+    }else{
+      drawHorizontalBars();
+      drawMap();
+    }
 
-    nulls_old = nulls;
-    pedidos_old = pedidos;
+    disponibles_old = disponibles;
     ocupados_old = ocupados;
 
     d3.select("#t_taxis").text(t_taxis);
@@ -167,23 +158,17 @@ function loadData(){
 }
 
 function drawBars(){
-  d3.select("#pedidos")
+  d3.select("#disponibles")
     .html("");
   d3.select("#ocupados")
     .html("");
-  d3.select("#nulls")
-    .html("");
 
-  if(f_pedidos == 1){
-    pedidos_svg = barsSvg(pedidos, pedidos_svg, "#pedidos", "#00a088");
+  if(f_disponibles == 1){
+    disponibles_svg = barsSvg(disponibles, disponibles_svg, "#disponibles", "#4c78a8");
   }
 
   if(f_ocupados == 1){
     ocupados_svg = barsSvg(ocupados, ocupados_svg, "#ocupados", "#f58518");
-  }
-
-  if(f_nulls == 1){
-    nulls_svg = barsSvg(nulls, nulls_svg, "#nulls", "#4c78a8");
   }
 
   d3.select("#bars .loader").remove();
@@ -207,9 +192,8 @@ function barsSvg(data, svg, id, color){
       })
       .on("mouseout", function(d,i){
         if(active_hour == -1){
-          pedidos_svg.select(".annotation-group").remove();
+          disponibles_svg.select(".annotation-group").remove();
           ocupados_svg.select(".annotation-group").remove();
-          nulls_svg.select(".annotation-group").remove();
         }
       })
       .on("click", function(d,i){
@@ -220,6 +204,7 @@ function barsSvg(data, svg, id, color){
           active_hour = i;
           interaccionBarras(etiquetas[i], true);
         }
+        loadData(true);
       });
 
   svg.append("g")
@@ -236,9 +221,8 @@ function barsSvg(data, svg, id, color){
     })
     .on("mouseout", function(d,i){
       if(active_hour == -1){
-        pedidos_svg.select(".annotation-group").remove();
+        disponibles_svg.select(".annotation-group").remove();
         ocupados_svg.select(".annotation-group").remove();
-        nulls_svg.select(".annotation-group").remove();
       }
     })
     .on("click", function(d,i){
@@ -249,6 +233,7 @@ function barsSvg(data, svg, id, color){
         active_hour = i;
         interaccionBarras(etiquetas[i], true);
       }
+      loadData(true);
     })
     .attr("x", (d,i) => x(etiquetas[i]))
     .attr("y", height - margin.bottom)
@@ -285,30 +270,26 @@ function getMinutes(hour){
 
 function drawHorizontalBars(){
   var max_minutos = 0;
-  if(max_minutos < minutos["pedido"] && f_pedidos == 1){
-    max_minutos = minutos["pedido"];
+  //minutos["ocupado"] = Math.round(minutos["ocupado"]/t_taxis);
+  //minutos["disponible"] = Math.round(minutos["disponible"]/t_taxis);
+  if(max_minutos < minutos["disponible"] && f_disponibles == 1){
+    max_minutos = minutos["disponible"];
   }
   if(max_minutos < minutos["ocupado"] && f_ocupados == 1){
     max_minutos = minutos["ocupado"];
   }
-  if(max_minutos < minutos["null"] && f_nulls == 1){
-    max_minutos = minutos["null"];
-  }
 
   var domain = [];
-  if(f_nulls == 1){
-    domain.push("Vacío");
+  if(f_disponibles == 1){
+    domain.push("Disponible");
   }
   if(f_ocupados == 1){
     domain.push("Ocupado");
   }
-  if(f_pedidos == 1){
-    domain.push("Pedido");
-  }
 
   const minX = d3.scaleLinear()
     .domain([0, max_minutos]).nice()
-    .range([margin.left+10, width - margin.right - 10]);
+    .range([margin.left+15, width - margin.right - 10]);
   const minY = d3.scaleBand()
     .domain(domain)
     .range([width - margin.bottom, margin.top])
@@ -328,7 +309,7 @@ function drawHorizontalBars(){
       .attr("font-weight", "bold")
       .text("Minutos"));
   var yAxis = g => g
-      .attr("transform", `translate(${margin.left+10},0)`)
+      .attr("transform", `translate(${margin.left+15},0)`)
       .call(d3.axisLeft(minY).tickSizeOuter(0));
 
   d3.select("#minutes").html("");
@@ -343,25 +324,25 @@ function drawHorizontalBars(){
   svg.append("g")
     .call(yAxis);
 
-  if(f_pedidos == 1){
+  if(f_disponibles == 1){
     svg.append("g")
-      .attr("fill", "#00a088")
+      .attr("fill", "#4c78a8")
       .append("rect")
       .attr("x", minX(0))
-      .attr("y", d => minY("Pedido"))
+      .attr("y", d => minY("Disponible"))
       .attr("height", minY.bandwidth())
       .attr("width", 0)
       .transition()
       .duration(1000)
-      .attr("width", d => minX(minutos["pedido"]) - minX(0));
+      .attr("width", d => minX(minutos["disponible"]) - minX(0));
     svg.append("g")
       .attr("fill", "white")
       .attr("text-anchor", "end")
       .style("font", "1.51m sans-serif")
       .append("text")
-      .attr("x", d =>  minX(minutos["pedido"]) - 5)
-      .attr("y", d => minY("Pedido") + minY.bandwidth() - 10)
-      .html(d => minutos["pedido"]+" Minutos");
+      .attr("x", d =>  minX(minutos["disponible"]) - 5)
+      .attr("y", d => minY("Disponible") + minY.bandwidth() - 10)
+      .html(d => minutos["disponible"]);
   }
   if(f_ocupados == 1){
     svg.append("g")
@@ -381,86 +362,168 @@ function drawHorizontalBars(){
       .append("text")
       .attr("x", d =>  minX(minutos["ocupado"]) - 5)
       .attr("y", d => minY("Ocupado") + minY.bandwidth() - 10)
-      .text(d => minutos["ocupado"]+" Minutos");
+      .text(d => minutos["ocupado"]);
   }
-  if(f_nulls == 1){
-    svg.append("g")
-      .attr("fill", "#4c78a8")
-      .append("rect")
-      .attr("x", minX(0))
-      .attr("y", d => minY("Vacío"))
-      .attr("height", minY.bandwidth())
-      .attr("width", 0)
-      .transition()
-      .duration(1000)
-      .attr("width", d => minX(minutos["null"]) - minX(0));
-      svg.append("g")
-      .attr("fill", "white")
-      .attr("text-anchor", "end")
-      .style("font", "1.51m sans-serif")
-      .append("text")
-      .attr("x", d =>  minX(minutos["null"]) - 5)
-      .attr("y", d => minY("Vacío") + minY.bandwidth() - 10)
-      .text(d => minutos["null"]+" Minutos");
-  }
+
+  const myNotification = window.createNotification({
+    closeOnClick: true,
+    displayCloseButton: true,
+    positionClass: "nfc-bottom-right",
+    showDuration: 5000,
+    theme: "info"
+  })({
+    title: "Notificación",
+    message: "Las barras horizontales han sido actualizadas"
+  });
 }
 d3.select("#minutes .loader").remove();
 
 // End Barras Minutos
 
 // Begin Mapa
+function insertOrigen(cid,lat,lon){
+  if(cid != 0){
+    if(origenes.indexOf(cid) == -1){
+      origenes[cid] = [];
+    }
+    origenes[cid].push({"lat":lat,"lon":lon});
+  }
+}
 function drawMap(){
   d3.select("#map")
     .html("");
   d3.select("#map").attr("style","height:"+(width-30)+"px");
-
+  var service = "https://services.arcgis.com/8DAUcrpQcpyLMznu/arcgis/rest/services/TActividadTaxis/FeatureServer/0";
   require([
-      "esri/map",
-      "esri/layers/FeatureLayer",
-      "dojo/_base/array",
-      "dojo/dom",
-      "dojo/number",
-      "dojo/on",
-      "dojo/parser",
-      "dojo/ready"
-  ], function (Map, FeatureLayer, array, dom, number, on, parser, ready) {
-      parser.parse();
+  "esri/Map",
+  "esri/views/MapView",
+  "esri/widgets/LayerList",
+  "esri/layers/FeatureLayer",
+  "esri/renderers/Renderer",
+], function (Map, MapView, LayerList, FeatureLayer, Renderer) {
 
-      var map, layer, classification;
-
-      ready(function () {
-          map = new Map("map", {
-              basemap:"gray-vector",
-              center:[-74.1079335, 4.6264527],
-              zoom: 19
-          });
-          addMarks();
-      });
-
-      function addMarks() {
-        var marks = new FeatureLayer("https://services.arcgis.com/8DAUcrpQcpyLMznu/arcgis/rest/services/TActividadTaxis/FeatureServer/0", {
-          id:"marks",
-          styling:false
-        });
-        if(marks.surfaceType === "svg") {
-          classification = {"null":"#4c78a8","pedido":"#00a088","ocupado":"#f58518"};
-
-          on(marks, "graphic-draw", function (evt) {
-            var attrs = evt.graphic.attributes;
-            var estado = (attrs && attrs.estado) || undefined;
-            var h = (attrs && attrs.h) || undefined;
-            var color = classification[estado];
-            evt.node.setAttribute("data-classification", estado);
-          });
-          //createLegend();
-        }else{
-          alert("Parece que tu navegador no soporta SVG.\nPrueba usar uno que sí lo haga, te recomendamos Google Chrome.");
-          dom.byId("legend").innerHTML = "Parece que tu navegador no soporta SVG.";
-        }
-        map.addLayer(marks);
-        return marks;
-      }
+  var map = new Map({
+      basemap:"gray-vector"
   });
+  const view = new MapView({
+    container: "map",
+    map: map,
+    center:[-74.1079335, 4.6264527],
+    zoom: 19
+  });
+
+  var marks = new FeatureLayer("https://services.arcgis.com/8DAUcrpQcpyLMznu/arcgis/rest/services/TActividadTaxis/FeatureServer/0", {
+    id:"marks",
+    styling:false,
+    popupTemplate: { // autocasts as new PopupTemplate()
+      title: "Medición del taxi {tid}",
+      content: "test"
+    }
+  });
+  const symbol_oculto = {
+    type: "simple-marker",
+    color: "rgba(255,255,255,0)",
+    outline:{
+      width: 0
+    },
+    width: 0,
+    height: 0,
+  };
+  const symbol_null = {
+    type: "simple-marker",
+    color: "rgba(76,120,168,0.5)",
+    outline:{
+      width: 0
+    },
+    width: 10,
+    height: 10,
+  };
+  const symbol_pedido = {
+    type: "simple-marker",
+    color: "rgba(0,160,136,0.5)",
+    outline:{
+      width: 0
+    },
+    width: 10,
+    height: 10,
+  };
+  var symbol_disponible = {
+    type: "simple-marker",
+    color: "rgba(76,120,168,0.5)",
+    outline:{
+      width: 0
+    },
+    width: 10,
+    height: 10,
+  };
+  var symbol_ocupado = {
+    type: "simple-marker",
+    color: "rgba(245,133,24,0.5)",
+    outline:{
+      width: 0
+    },
+    width: 10,
+    height: 10,
+  };
+  var symbol_origen = {
+    type: "simple-marker",
+    color: "rgba(25,25,25,1)",
+    outline:{
+      color: "rgba(245,133,24,1)",
+      width: 2
+    },
+    width: 8,
+    height: 8,
+  };
+  if(f_disponibles == 0){
+    symbol_disponible = symbol_oculto;
+  }
+  if(f_ocupados == 0){
+    symbol_ocupado = symbol_oculto;
+    symbol_origen = symbol_oculto;
+  }
+
+  marks.renderer = {
+    type: "unique-value",
+    field: "estado",
+    //field2: "origen",
+    uniqueValueInfos: [{
+      value: "null",
+      symbol: symbol_null,
+      label: "Vacío"
+    }, {
+      value: "pedido",
+      symbol: symbol_pedido,
+      label: "Pedido"
+    }, {
+      value: "disponible",//"disponible, false"
+      symbol: symbol_disponible,
+      label: "Disponible"
+    }, {
+      value: "ocupado",//"ocupado, false"
+      symbol: symbol_ocupado,
+      label: "Ocupado"
+    }, {
+      value: "ocupado",//"ocupado, true"
+      symbol: symbol_origen,
+      label: "Ocupado (Origen)"
+    }]
+  };
+  
+  const layerList = new LayerList({
+    view: view,
+    listItemCreatedFunction: function(event) {
+      event.item.title = "Actividad de Taxis";
+      event.item.panel = {
+        content: "legend",
+        open: true
+      };
+    }
+  });
+  view.ui.add(layerList, "top-right");
+  map.add(marks);
+  
+});
 
   d3.select("#map .loader").remove();
   const myNotification = window.createNotification({
@@ -477,20 +540,19 @@ function drawMap(){
 // End Mapa
 
 // Begin Interacciones
-d3.select("#estado #f_pedidos")
+d3.select("#estado #f_disponibles")
   .on("click", function(){
     if(!d3.select(this).classed("is-selected")){
       d3.select(this).classed("is-selected", true);
-      f_pedidos = 1;
+      f_disponibles = 1;
     }else{
       d3.select(this).classed("is-selected", false);
-      f_pedidos = 0;
+      f_disponibles = 0;
 
-      if(f_nulls == f_pedidos && f_nulls == f_ocupados){
-        d3.select("#f_nulls").classed("is-selected", true);
-        d3.select("#f_pedidos").classed("is-selected", true);
+      if(f_disponibles == f_ocupados){
+        d3.select("#f_disponibles").classed("is-selected", true);
         d3.select("#f_ocupados").classed("is-selected", true);
-        f_nulls = 1; f_ocupados = 1; f_pedidos = 1;
+        f_ocupados = 1; f_disponibles = 1;
       }
     }
     loadData();
@@ -505,30 +567,10 @@ d3.select("#estado #f_ocupados")
       d3.select(this).classed("is-selected", false);
       f_ocupados = 0;
 
-      if(f_nulls == f_pedidos && f_nulls == f_ocupados){
-        d3.select("#f_nulls").classed("is-selected", true);
-        d3.select("#f_pedidos").classed("is-selected", true);
+      if(f_disponibles == f_ocupados){
+        d3.select("#f_disponibles").classed("is-selected", true);
         d3.select("#f_ocupados").classed("is-selected", true);
-        f_nulls = 1; f_ocupados = 1; f_pedidos = 1;
-      }
-    }
-    loadData();
-  });
-
-d3.select("#estado #f_nulls")
-  .on("click", function(){
-    if(!d3.select(this).classed("is-selected")){
-      d3.select(this).classed("is-selected", true);
-      f_nulls = 1;
-    }else{
-      d3.select(this).classed("is-selected", false);
-      f_nulls = 0;
-
-      if(f_nulls == f_pedidos && f_nulls == f_ocupados){
-        d3.select("#f_nulls").classed("is-selected", true);
-        d3.select("#f_pedidos").classed("is-selected", true);
-        d3.select("#f_ocupados").classed("is-selected", true);
-        f_nulls = 1; f_ocupados = 1; f_pedidos = 1;
+        f_ocupados = 1; f_disponibles = 1;
       }
     }
     loadData();
@@ -536,9 +578,8 @@ d3.select("#estado #f_nulls")
 
 function interaccionBarras(hora, active = false){
   var i = etiquetas.indexOf(hora);
-  barras_annotate(pedidos_svg, x(etiquetas[i]), y(pedidos[i]), pedidos[i], i, "Pedidos", active);
+  barras_annotate(disponibles_svg, x(etiquetas[i]), y(disponibles[i]), disponibles[i], i, "Disponibles", active);
   barras_annotate(ocupados_svg, x(etiquetas[i]), y(ocupados[i]), ocupados[i], i, "Ocupados", active);
-  barras_annotate(nulls_svg, x(etiquetas[i]), y(nulls[i]), nulls[i], i, "Vacío", active);
 }
 // End Interacciones
 
@@ -549,7 +590,7 @@ function barras_annotate(svg, posX, posY, d, i, label, active){
   }
   posX += x.bandwidth()/2;
 
-  var color = (active)? "#ff3860" : "#209cee";
+  var color = (active)? "#ff3860" : "#00a088";
   if(active){
     label = label+" (Filtro Activo)"
   }
@@ -585,3 +626,20 @@ function barras_annotate(svg, posX, posY, d, i, label, active){
 window.onresize = function(event) {
   loadData();
 }
+
+// JQuery
+var element = $('#filters').offset();
+$('#filters').css("width",$('.columns.is-desktop').width());
+if($(window).scrollTop() > element.top){
+  $('#filters').css('position','fixed').css('top','0');
+} else {
+  $('#filters').css('position','static');
+}
+
+$(window).scroll(function(){
+  if($(window).scrollTop() > element.top){
+    $('#filters').css('position','fixed').css('top','0');
+  } else {
+    $('#filters').css('position','static');
+  }   
+});

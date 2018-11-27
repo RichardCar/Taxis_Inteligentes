@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/notifications.css">
     <link rel="stylesheet" href="css/actividad.css">
-    <link rel="stylesheet" href="https://js.arcgis.com/3.26/esri/css/jsapi.css" />
+    <link rel="stylesheet" href="https://js.arcgis.com/4.9/esri/themes/light/main.css">
 </head>
 
 <body>
@@ -42,49 +42,43 @@
             <h1 class="title">Actividad de Taxis</h1>
             <h2 class="subtitle"></h2>
             <div class="content">
-                <p>Los Taxis Inteligentes usan aplicaciones móviles para calcular los costos de las carreras y su ruta,
-                    inlcuso cuando el servicio es tomado en la calle y no desde una app de usuario. Por esto, cuando
-                    los taxis inteligentes se desplazan por la ciudad se encuentran en uno de tres estados:</p>
+                <p>Los Taxis Inteligentes usan aplicaciones móviles para calcular los costos de las carreras y su ruta, inlcuso cuando el servicio es tomado en la calle y no desde una aplicación móvil de usuario. Por esto, cuando los taxis inteligentes se desplazan por la ciudad se encuentran en uno de dos estados:</p>
                 <ul>
-                    <li><b>Pedido:</b> Cuando el taxi está en ruta a recoger un pasajero que pidió el servicio por
-                        medio de una app.</li>
-                    <li><b>Ocupado:</b> Cuando el taxi se dirije al punto de destino de sus pasajeros después de que
-                        estos tomaran el servicio ya fuera por medio de una app o no.</li>
-                    <li><b>Vacío (null):</b> Cuando no está en ninguno de los dos estados anteriores.</li>
+                    <li><b>Disponible:</b> Cuando el taxi está disponible para recoger pasajeros ya sea por medio de una aplicación móvil o en la calle.</li>
+                    <li><b>Ocupado:</b> Cuando el taxi se dirije al punto de destino de sus pasajeros.</li>
                 </ul>
 
             </div>
         </section>
         <section class="section">
-            <div class="columns is-mobile">
+            <div class="columns is-mobile" id="filters">
                 <div class="column">
                     <label for="estado"><b>Filtra por estado</b>:</label><br>
                     <div class="buttons has-addons" id="estado">
-                        <span class="button is-selected" id="f_pedidos">Pedido</span>
                         <span class="button is-selected" id="f_ocupados">Ocupado</span>
-                        <span class="button is-selected" id="f_nulls">Vacío</span>
+                        <span class="button is-selected" id="f_disponibles">Disponible</span>
                     </div>
                 </div>
                 <div class="column" id="data">
                     <p>Total taxis en la muestra: <span id="t_taxis"></span></p>
                     <p>Total mediciones en la muestra: <span id="t_mediciones"></span></p>
+                    <p>Fecha de la muestra: Agosto 1 de 2018</p>
                 </div>
             </div>
             <div class="columns is-desktop">
                 <div class="column has-text-centered">
-                    <span class="button">Número de mediciones por estado</span>
+                    <span class="button">Número de mediciones por hora del día</span>
                 </div>
                 <div class="column has-text-centered">
-                    <span class="button">¿Cuánto tiempo pasan los taxis en cada estado?</span>
+                    <span class="button">¿Cuántos minutos pasan los taxis en cada estado?</span>
                 </div>
             </div>
             <div class="columns is-desktop">
                 <div class="column">
                     <div id="bars">
                         <div class="loader">Loading...</div>
-                        <div id="pedidos"></div>
                         <div id="ocupados"></div>
-                        <div id="nulls"></div>
+                        <div id="disponibles"></div>
                     </div>
                 </div>
                 <div class="column">
@@ -103,9 +97,6 @@
                     <div id="map">
                         <div class="loader">Loading...</div>
                         <div id="legend">
-                            <div style="padding: 6px; text-align: center;">
-                                Labels
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -157,7 +148,8 @@
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.3.1/d3-annotation.independent.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.3.1/d3-annotation.min.js"></script>
-    <script src="https://js.arcgis.com/3.26/"></script>
+    <script src="https://js.arcgis.com/4.9/"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="js/notifications.js" type="text/javascript"></script>
     <script src="js/actividad.js" type="text/javascript"></script>
 </body>
