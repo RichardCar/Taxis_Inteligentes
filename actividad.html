@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/notifications.css">
     <link rel="stylesheet" href="css/actividad.css">
+    <link rel="stylesheet" href="libraries/enjoyhint/enjoyhint.css">
     <link rel="stylesheet" href="https://js.arcgis.com/4.9/esri/themes/light/main.css">
 </head>
 
@@ -38,7 +39,8 @@
                 <li><a href="team.html">Equipo</a></li>
             </ul>
         </div>
-        <section class="section">
+        <section class="section step" id="intro">
+            <button class="button is-light" onclick="takeTour();" style="float:right;">Reproducir Guía</button>
             <h1 class="title">Actividad de Taxis</h1>
             <h2 class="subtitle"></h2>
             <div class="content">
@@ -47,12 +49,11 @@
                     <li><b>Disponible:</b> Cuando el taxi está disponible para recoger pasajeros ya sea por medio de una aplicación móvil o en la calle.</li>
                     <li><b>Ocupado:</b> Cuando el taxi se dirije al punto de destino de sus pasajeros.</li>
                 </ul>
-
             </div>
         </section>
         <section class="section">
-            <div class="columns is-mobile" id="filters">
-                <div class="column">
+            <div class="columns is-mobile">
+                <div class="column" id="filters">
                     <label for="estado"><b>Filtra por estado</b>:</label><br>
                     <div class="buttons has-addons" id="estado">
                         <span class="button is-selected" id="f_ocupados">Ocupado</span>
@@ -73,7 +74,7 @@
                     <span class="button">¿Cuántos minutos pasan los taxis en cada estado?</span>
                 </div>
             </div>
-            <div class="columns is-desktop">
+            <div class="columns is-desktop" id="graphics-bars">
                 <div class="column">
                     <div id="bars">
                         <div class="loader">Loading...</div>
@@ -148,8 +149,9 @@
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.3.1/d3-annotation.independent.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.3.1/d3-annotation.min.js"></script>
-    <script src="https://js.arcgis.com/4.9/"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="libraries/enjoyhint/enjoyhint.min.js" type="text/javascript"></script>
+    <script src="https://js.arcgis.com/4.9/"></script>
     <script src="js/notifications.js" type="text/javascript"></script>
     <script src="js/actividad.js" type="text/javascript"></script>
 </body>

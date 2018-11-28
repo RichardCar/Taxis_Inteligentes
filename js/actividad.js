@@ -34,7 +34,7 @@ yAxis_estados = g => g
   .call(g => g.select(".domain").remove())
   .call(g => g.select(".tick:first-of-type text").clone()
       .attr("x", 0)
-      .attr("y", -20)
+      .attr("y", -35)
       .style("transform","rotate(-90deg)")
       .attr("text-anchor", "start")
       .attr("font-weight", "bold")
@@ -64,7 +64,7 @@ function loadData(click_hora = false){
     numero_graficas += 1;
   }
 
-  height = (width/numero_graficas);
+  height = (width/numero_graficas) -10;
 
   d3.csv("data/actividad.csv").then(function(data){
     rawData = data;
@@ -292,19 +292,19 @@ function drawHorizontalBars(){
     .range([margin.left+15, width - margin.right - 10]);
   const minY = d3.scaleBand()
     .domain(domain)
-    .range([width - margin.bottom, margin.top])
+    .range([width-20 - margin.bottom, margin.top])
     .padding(0.1);
   const xAxis = g => g
-    .attr("transform", `translate(0,${width - margin.bottom+10})`)
+    .attr("transform", `translate(0,${width-20 - margin.bottom+10})`)
     .attr("class","yAxis_estados")
     .call(d3.axisBottom(minX)
       .ticks(10)
       .tickSizeOuter(0)
-      .tickSize(-width))
+      .tickSize(-width-20))
     .call(g => g.select(".domain").remove())
     .call(g => g.select(".tick:first-of-type text").clone()
       .attr("y", 15)
-      .attr("x", -10)
+      .attr("x", 0)
       .attr("text-anchor", "start")
       .attr("font-weight", "bold")
       .text("Minutos"));
@@ -317,7 +317,7 @@ function drawHorizontalBars(){
   const svg = d3.select("#minutes")
     .append("svg")
       .attr("width", width)
-      .attr("height", width);
+      .attr("height", width-20);
     
   svg.append("g")
     .call(xAxis);
@@ -393,7 +393,6 @@ function drawMap(){
   d3.select("#map")
     .html("");
   d3.select("#map").attr("style","height:"+(width-30)+"px");
-  var service = "https://services.arcgis.com/8DAUcrpQcpyLMznu/arcgis/rest/services/TActividadTaxis/FeatureServer/0";
   require([
   "esri/Map",
   "esri/views/MapView",
@@ -412,7 +411,7 @@ function drawMap(){
     zoom: 19
   });
 
-  var marks = new FeatureLayer("https://services.arcgis.com/8DAUcrpQcpyLMznu/arcgis/rest/services/TActividadTaxis/FeatureServer/0", {
+  var marks = new FeatureLayer("https://services.arcgis.com/8DAUcrpQcpyLMznu/arcgis/rest/services/EstadoTaxis/FeatureServer/0", {
     id:"marks",
     styling:false,
     popupTemplate: { // autocasts as new PopupTemplate()
@@ -486,7 +485,8 @@ function drawMap(){
   marks.renderer = {
     type: "unique-value",
     field: "estado",
-    //field2: "origen",
+    //field2: "h",
+    //field3: "origen",
     uniqueValueInfos: [{
       value: "null",
       symbol: symbol_null,
@@ -509,6 +509,29 @@ function drawMap(){
       label: "Ocupado (Origen)"
     }]
   };
+
+  if(active_hour >= 0){
+    marks.renderer = {
+      type: "unique-value",
+      field: "estado",
+      field2: "h",
+      //field3: "origen",
+      fieldDelimiter: ", ",
+      uniqueValueInfos: [{
+        value: "disponible, "+active_hour,
+        symbol: symbol_disponible,
+        label: "Disponible"
+      }, {
+        value: "ocupado, "+active_hour,
+        symbol: symbol_ocupado,
+        label: "Ocupado"
+      }, {
+        value: "ocupado, "+active_hour,
+        symbol: symbol_origen,
+        label: "Ocupado (Origen)"
+      }]
+    };
+  }
   
   const layerList = new LayerList({
     view: view,
@@ -643,3 +666,46 @@ $(window).scroll(function(){
     $('#filters').css('position','static');
   }   
 });
+
+// EnjoyHint
+
+function takeTour(){
+  var enjoyhint_instance = new EnjoyHint({});
+  var enjoyhint_script_steps = [
+    {
+      "next #intro": "<p>¡Hola!</p><p>Antes de comenzar debes saber sobre lo que significa la actividad de los taxis inteligentes.</p>",
+      "nextButton" : {text: "Siguiente"},
+      "skipButton" : {text: "Omitir"},
+    },{
+      "next #filters": "<p>Puedes filtrar los datos que se muestran en todas las gráficas con estas opciones.</p>",
+      "nextButton" : {text: "Siguiente"},
+      "skipButton" : {text: "Omitir"},
+    },{
+      "click #f_ocupados": "<p>Por ejemplo, <b>haz clic</b> en Ocupado para desactivarlo y ocultar sus datos.</p>",
+      "showSkip": false
+    },{
+      "next #graphics-bars": "<p>Nota que los gráficos ahora sólo muestran los datos del estado <b>Disponible</b> ya que el filtro de Ocupado está desactivado.</p>",
+      "nextButton" : {text: "Siguiente"},
+      "skipButton" : {text: "Omitir"},
+    },{
+      "next #map": "<p>Incluso el mapa se actualiza con los nuevos parámetros.</p>",
+      "nextButton" : {text: "Siguiente"},
+      "skipButton" : {text: "Omitir"},
+    },{
+      "click #f_ocupados": "<p>Reactivalo nuevamente haciendo clic.</p>",
+      "showSkip": false
+    },{
+      "next #data": "<p>Estos son los datos que se muestran en las gráficas, al usar los filtros estos valores también cambiarán.</p>",
+      "showSkip": false,
+      "nextButton" : {text: "Terminar"},
+    }
+  ];
+
+  enjoyhint_instance.set(enjoyhint_script_steps);
+  enjoyhint_instance.run();
+  document.cookie = "tour=taken";
+}
+
+if(document.cookie.indexOf("tour") == -1){
+  takeTour();
+}
