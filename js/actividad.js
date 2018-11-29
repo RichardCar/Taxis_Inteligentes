@@ -506,6 +506,21 @@ function drawMap(){
       symbol: symbol_origen,
       label: "Ocupado (Origen)"
     }];
+    if(active_hour >= 0){
+      unique_vals_ah = [{
+        value: "disponible, false, "+active_hour,
+        symbol: symbol_disponible,
+        label: "Disponible"
+      }, {
+        value: "ocupado, false, "+active_hour,
+        symbol: symbol_ocupado,
+        label: "Ocupado"
+      }, {
+        value: "ocupado, true, "+active_hour,
+        symbol: symbol_origen,
+        label: "Ocupado (Origen)"
+      }];
+    }
 
     if(f_taxi != "all"){
       field2 = "tid";
@@ -547,7 +562,7 @@ function drawMap(){
         field2: field2,
         field3: "h",
         fieldDelimiter: ", ",
-        uniqueValueInfos: unique_vals
+        uniqueValueInfos: unique_vals_ah
       };
     }
   });
@@ -676,19 +691,19 @@ window.onresize = function(event) {
 }
 
 // JQuery
-var element = $('#filters').offset();
-$('#filters').css("width",$('.columns.is-desktop').width());
+var element = $('.tofix').offset();
+$('.tofix').css("width",$('.columns.is-desktop').width());
 if($(window).scrollTop() > element.top){
-  $('#filters').css('position','fixed').css('top','0');
+  $('.tofix').css('position','fixed').css('top','0');
 } else {
-  $('#filters').css('position','static');
+  $('.tofix').css('position','static');
 }
 
 $(window).scroll(function(){
   if($(window).scrollTop() > element.top){
-    $('#filters').css('position','fixed').css('top','0');
+    $('.tofix').css('position','fixed').css('top','0');
   } else {
-    $('#filters').css('position','static');
+    $('.tofix').css('position','static');
   }   
 });
 
@@ -719,6 +734,10 @@ function takeTour(){
     },{
       "click #f_ocupados": "<p>Reactívalo nuevamente haciendo clic.</p>",
       "showSkip": false
+    },{
+      "next #bars": "<p>Con esta gráfica también es posible filtrar los datos por hora haciendo click en la etiqueta de la hora o en la barra correspondiente.</p><p>Para desactivar el filtro debes hacer clic nuevamente.</p>",
+      "nextButton" : {text: "Siguiente"},
+      "skipButton" : {text: "Omitir"},
     },{
       "next #data": "<p>Estos son los datos que se muestran en las gráficas, al usar los filtros estos valores también cambiarán.</p>",
       "showSkip": false,

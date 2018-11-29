@@ -40,7 +40,7 @@
     fill-opacity: 0.75;
 }
 
-#filters{
+.tofix{
     background-color: #fff;
     z-index: 999;
 }
