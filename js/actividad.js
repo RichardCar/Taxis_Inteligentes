@@ -2,12 +2,14 @@
 var margin = ({top: 20, right: 0, bottom: 35, left: 40});
 var width = d3.select("#bars").node().getBoundingClientRect().width;
 var height = (width/3);
-var rawData, mapData, disponibles, ocupados, max, totalMediciones, taxis, t_taxis, p, o, n, x, y, numero_graficas;
+var disponibles, ocupados, max, total_mediciones, taxis, t_taxis, p, o, n, x, y, numero_graficas;
+var f_disponibles = 1;
+var f_ocupados = 1;
+var f_taxi = "all";
+var f_taxi_set = false;
 
 //Barras
 var etiquetas = ["12am","1am","2am","3am","4am","5am","6am","7am","8am","9am","10am","11am","12pm","1pm","2pm","3pm","4pm","5pm","6pm","7pm","8pm","9pm","10pm","11pm"];
-var f_disponibles = 1;
-var f_ocupados = 1;
 
 //Barras Minutos
 var minutos = {"disponible": 0, "ocupado": 0};
@@ -67,8 +69,6 @@ function loadData(click_hora = false){
   height = (width/numero_graficas) -10;
 
   d3.csv("data/actividad.csv").then(function(data){
-    rawData = data;
-    
     disponibles = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     ocupados = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     minutos = {"disponible": 0, "ocupado": 0};
@@ -85,12 +85,18 @@ function loadData(click_hora = false){
     
     data.forEach(function(d, i){
       var to_count = 0;
-      if(d.h >= 0 && d.h <= 23){
+      if(d.h >= 0 && d.h <= 23 && (f_taxi == "all" || f_taxi == d.tid)){
         if(typeof taxis[d.tid] != "undefined"){
           taxis[d.tid] += 1;
         }else{
           taxis[d.tid] = 1;
           t_taxis += 1;
+
+          if(f_taxi_set == false){
+            d3.select("#f_taxis").append("option")
+              .attr("value",d.tid)
+              .text(d.tid);
+          }
         }
         if(d.estado == "disponible" && (f_disponibles == 1)){
           disponibles[d.h] += 1;
@@ -109,7 +115,7 @@ function loadData(click_hora = false){
           to_count = 1;
         }
       }
-      if(active_hour == -1 || active_hour == d.h){
+      if((active_hour == -1 || active_hour == d.h) && (f_taxi == "all" || f_taxi == d.tid)){
         if(to_count == 1){
           if(d.estado == "ocupado"){
             min_ocupados[d.tid+d.hora] = 1;
@@ -126,7 +132,7 @@ function loadData(click_hora = false){
     for(var propertyName in min_disponibles){     
       minutos["disponible"] += 1;
     }
-    totalMediciones = p+o+n;
+    total_mediciones = p+o+n;
 
     y = d3.scaleLinear()
       .domain([0, max]).nice()
@@ -149,11 +155,13 @@ function loadData(click_hora = false){
     ocupados_old = ocupados;
 
     d3.select("#t_taxis").text(t_taxis);
-    d3.select("#t_mediciones").text(totalMediciones);
+    d3.select("#t_mediciones").text(total_mediciones);
 
     if(active_hour != -1){
       interaccionBarras(etiquetas[active_hour], true);
     }
+
+    f_taxi_set = true;
   });
 }
 
@@ -471,46 +479,75 @@ function drawMap(){
       symbol_origen = symbol_oculto;
     }
 
-    marks.renderer = {
-      type: "unique-value",
-      field: "estado",
-      field2: "origen",
-      fieldDelimiter: ", ",
-      uniqueValueInfos: [{
-        value: "disponible, false",
+    var field2 = "origen";
+    var unique_vals = [{
+      value: "disponible, false",
+      symbol: symbol_disponible,
+      label: "Disponible"
+    }, {
+      value: "ocupado, false",
+      symbol: symbol_ocupado,
+      label: "Ocupado"
+    }, {
+      value: "ocupado, true",
+      symbol: symbol_origen,
+      label: "Ocupado (Origen)"
+    }];
+    var unique_vals_ah = [{
+      value: "disponible, false, "+active_hour,
+      symbol: symbol_disponible,
+      label: "Disponible"
+    }, {
+      value: "ocupado, false, "+active_hour,
+      symbol: symbol_ocupado,
+      label: "Ocupado"
+    }, {
+      value: "ocupado, true, "+active_hour,
+      symbol: symbol_origen,
+      label: "Ocupado (Origen)"
+    }];
+
+    if(f_taxi != "all"){
+      field2 = "tid";
+      unique_vals = [{
+        value: "disponible, "+f_taxi,
         symbol: symbol_disponible,
         label: "Disponible"
       }, {
-        value: "ocupado, false",
+        value: "ocupado, "+f_taxi,
         symbol: symbol_ocupado,
         label: "Ocupado"
-      }, {
-        value: "ocupado, true",
-        symbol: symbol_origen,
-        label: "Ocupado (Origen)"
-      }]
+      }];
+
+      if(active_hour >= 0){
+        unique_vals_ah = [{
+          value: "disponible, "+f_taxi+", "+active_hour,
+          symbol: symbol_disponible,
+          label: "Disponible"
+        }, {
+          value: "ocupado, "+f_taxi+", "+active_hour,
+          symbol: symbol_ocupado,
+          label: "Ocupado"
+        }];
+      }
+    }
+
+    marks.renderer = {
+      type: "unique-value",
+      field: "estado",
+      field2: field2,
+      fieldDelimiter: ", ",
+      uniqueValueInfos: unique_vals
     };
   
     if(active_hour >= 0){
       marks.renderer = {
         type: "unique-value",
         field: "estado",
-        field2: "origen",
+        field2: field2,
         field3: "h",
         fieldDelimiter: ", ",
-        uniqueValueInfos: [{
-          value: "disponible, false, "+active_hour,
-          symbol: symbol_disponible,
-          label: "Disponible"
-        }, {
-          value: "ocupado, false, "+active_hour,
-          symbol: symbol_ocupado,
-          label: "Ocupado"
-        }, {
-          value: "ocupado, true, "+active_hour,
-          symbol: symbol_origen,
-          label: "Ocupado (Origen)"
-        }]
+        uniqueValueInfos: unique_vals
       };
     }
   });
@@ -581,6 +618,12 @@ d3.select("#estado #f_ocupados")
     loadData();
   });
 
+d3.select("#f_taxis")
+  .on("change", function(){
+    f_taxi = d3.select("#f_taxis").property("value");
+    loadData();
+  });
+
 function interaccionBarras(hora, active = false){
   var i = etiquetas.indexOf(hora);
   barras_annotate(disponibles_svg, x(etiquetas[i]), y(disponibles[i]), disponibles[i], i, "Disponibles", active);
@@ -619,7 +662,7 @@ function barras_annotate(svg, posX, posY, d, i, label, active){
     .editMode(false)
     .notePadding(5)
     .type(type)
-    .annotations(annotations)
+    .annotations(annotations);
 
   var ac = (active)? " active" : "";
   svg.append("g")

@@ -54,10 +54,22 @@
         <section class="section">
             <div class="columns is-mobile">
                 <div class="column" id="filters">
-                    <label for="estado"><b>Filtra por estado</b>:</label><br>
-                    <div class="buttons has-addons" id="estado">
-                        <span class="button is-selected" id="f_ocupados">Ocupado</span>
-                        <span class="button is-selected" id="f_disponibles">Disponible</span>
+                    <div class="columns">
+                        <div class="column">
+                            <label for="estado"><b>Filtra por estado</b>:</label><br>
+                            <div class="buttons has-addons" id="estado">
+                                <span class="button is-selected" id="f_ocupados">Ocupado</span>
+                                <span class="button is-selected" id="f_disponibles">Disponible</span>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <label for="taxis"><b>Filtra por Taxi</b>:</label><br>
+                            <div class="select">
+                                <select id="f_taxis" name="f_taxis">
+                                    <option value="all">Todos</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="column" id="data">
