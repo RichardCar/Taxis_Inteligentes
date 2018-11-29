@@ -407,131 +407,113 @@ function drawMap(){
   const view = new MapView({
     container: "map",
     map: map,
-    center:[-74.1079335, 4.6264527],
-    zoom: 19
+    center:[-74.080, 4.666],
+    scale: 206000
   });
 
   var marks = new FeatureLayer("https://services.arcgis.com/8DAUcrpQcpyLMznu/arcgis/rest/services/EstadoTaxis/FeatureServer/0", {
     id:"marks",
     styling:false,
     popupTemplate: { // autocasts as new PopupTemplate()
-      title: "Medición del taxi {tid}",
-      content: "test"
+      title: "Medición del Taxi {tid}",
+      content: "<ul><li>Hora: {hora}</li><li>Estado: {estado}</li><li>Es Origen: {origen}</li></ul>"
     }
   });
-  const symbol_oculto = {
-    type: "simple-marker",
-    color: "rgba(255,255,255,0)",
-    outline:{
-      width: 0
-    },
-    width: 0,
-    height: 0,
-  };
-  const symbol_null = {
-    type: "simple-marker",
-    color: "rgba(76,120,168,0.5)",
-    outline:{
-      width: 0
-    },
-    width: 10,
-    height: 10,
-  };
-  const symbol_pedido = {
-    type: "simple-marker",
-    color: "rgba(0,160,136,0.5)",
-    outline:{
-      width: 0
-    },
-    width: 10,
-    height: 10,
-  };
-  var symbol_disponible = {
-    type: "simple-marker",
-    color: "rgba(76,120,168,0.5)",
-    outline:{
-      width: 0
-    },
-    width: 10,
-    height: 10,
-  };
-  var symbol_ocupado = {
-    type: "simple-marker",
-    color: "rgba(245,133,24,0.5)",
-    outline:{
-      width: 0
-    },
-    width: 10,
-    height: 10,
-  };
-  var symbol_origen = {
-    type: "simple-marker",
-    color: "rgba(25,25,25,1)",
-    outline:{
-      color: "rgba(245,133,24,1)",
-      width: 2
-    },
-    width: 8,
-    height: 8,
-  };
-  if(f_disponibles == 0){
-    symbol_disponible = symbol_oculto;
-  }
-  if(f_ocupados == 0){
-    symbol_ocupado = symbol_oculto;
-    symbol_origen = symbol_oculto;
-  }
+  
+  view.watch("scale", function(newValue) {
+    var dot_size
+    if(newValue>20000){
+      dot_size = "10px";
+    }
+    else{
+      dot_size = "20px";
+    }
 
-  marks.renderer = {
-    type: "unique-value",
-    field: "estado",
-    //field2: "h",
-    //field3: "origen",
-    uniqueValueInfos: [{
-      value: "null",
-      symbol: symbol_null,
-      label: "Vacío"
-    }, {
-      value: "pedido",
-      symbol: symbol_pedido,
-      label: "Pedido"
-    }, {
-      value: "disponible",//"disponible, false"
-      symbol: symbol_disponible,
-      label: "Disponible"
-    }, {
-      value: "ocupado",//"ocupado, false"
-      symbol: symbol_ocupado,
-      label: "Ocupado"
-    }, {
-      value: "ocupado",//"ocupado, true"
-      symbol: symbol_origen,
-      label: "Ocupado (Origen)"
-    }]
-  };
+    const symbol_oculto = {
+      type: "simple-marker",
+      color: "rgba(255,255,255,0)",
+      outline:{
+        width: 0
+      },
+      width: 0,
+      height: 0,
+    };
+    var symbol_disponible = {
+      type: "simple-marker",
+      color: "rgba(76,120,168,0.5)",
+      outline:{
+        width: 0
+      },
+      size: dot_size,
+    };
+    var symbol_ocupado = {
+      type: "simple-marker",
+      color: "rgba(245,133,24,0.5)",
+      outline:{
+        width: 0
+      },
+      size: dot_size,
+    };
+    var symbol_origen = {
+      type: "simple-marker",
+      color: "rgba(25,25,25,1)",
+      outline:{
+        color: "rgba(245,133,24,1)",
+        width: "2px",
+      },
+      size: dot_size,
+    };
+    if(f_disponibles == 0){
+      symbol_disponible = symbol_oculto;
+    }
+    if(f_ocupados == 0){
+      symbol_ocupado = symbol_oculto;
+      symbol_origen = symbol_oculto;
+    }
 
-  if(active_hour >= 0){
     marks.renderer = {
       type: "unique-value",
       field: "estado",
-      field2: "h",
-      //field3: "origen",
+      field2: "origen",
       fieldDelimiter: ", ",
       uniqueValueInfos: [{
-        value: "disponible, "+active_hour,
+        value: "disponible, false",
         symbol: symbol_disponible,
         label: "Disponible"
       }, {
-        value: "ocupado, "+active_hour,
+        value: "ocupado, false",
         symbol: symbol_ocupado,
         label: "Ocupado"
       }, {
-        value: "ocupado, "+active_hour,
+        value: "ocupado, true",
         symbol: symbol_origen,
         label: "Ocupado (Origen)"
       }]
     };
-  }
+  
+    if(active_hour >= 0){
+      marks.renderer = {
+        type: "unique-value",
+        field: "estado",
+        field2: "origen",
+        field3: "h",
+        fieldDelimiter: ", ",
+        uniqueValueInfos: [{
+          value: "disponible, false, "+active_hour,
+          symbol: symbol_disponible,
+          label: "Disponible"
+        }, {
+          value: "ocupado, false, "+active_hour,
+          symbol: symbol_ocupado,
+          label: "Ocupado"
+        }, {
+          value: "ocupado, true, "+active_hour,
+          symbol: symbol_origen,
+          label: "Ocupado (Origen)"
+        }]
+      };
+    }
+  });
   
   const layerList = new LayerList({
     view: view,
@@ -692,7 +674,7 @@ function takeTour(){
       "nextButton" : {text: "Siguiente"},
       "skipButton" : {text: "Omitir"},
     },{
-      "click #f_ocupados": "<p>Reactivalo nuevamente haciendo clic.</p>",
+      "click #f_ocupados": "<p>Reactívalo nuevamente haciendo clic.</p>",
       "showSkip": false
     },{
       "next #data": "<p>Estos son los datos que se muestran en las gráficas, al usar los filtros estos valores también cambiarán.</p>",
