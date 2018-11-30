@@ -107,7 +107,7 @@ var sankey = d3.sankey()
 
 var path = sankey.link();
 //get Data
-const _urlData = "data/datos1.json";
+const _urlData = "data/datos2.json";
 
 d3.json(_urlData).then(datos => {
   //console.log(datos);
@@ -126,7 +126,7 @@ d3.json(_urlData).then(datos => {
     .links(datos.links.sort((a, b) => {
       return a.value - b.value;
     }))
-    .layout(20);
+    .layout(50);
 
   // add in the links
   var link = svg.append("g").selectAll(".link")
