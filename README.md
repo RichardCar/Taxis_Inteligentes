@@ -130,6 +130,10 @@ Analyze -> Produce -> Derive (Attributes)
   * Estado: Color, hue.
   * Latitud, Longitude: Position.
 
+### Screenshots
+![preview](/img/ss-a1.png)
+![preview](/img/ss-a2.png)
+
 ___
 ## Uso de los Taxis
 
