@@ -163,17 +163,7 @@ var createSankey = (data) => {
         console.log(d);
         cambioMapa(d.name);
       });
-    // .call(d3.drag()
-    //   .subject(function (d) {
-    //     return d;
-    //   })
-    //   .on("start", function () {
-    //     this.parentNode.appendChild(this);
-    //   })
-    //   //.on("click",changeMap)
-    //   .on("drag", dragmove)
-    // //.on("click",d=>console.log(d))
-    // );
+ 
 
 
     node.append("rect")

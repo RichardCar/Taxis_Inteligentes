@@ -1,10 +1,10 @@
 var gisService = {
-  "Abril2017": {
+  "Abril2018": {
     "serviceTaxisOrigen": "https://services.arcgis.com/8DAUcrpQcpyLMznu/arcgis/rest/services/taxisInteligentesAbril/FeatureServer/1",
     "serviceTaxisDestination": "https://services.arcgis.com/8DAUcrpQcpyLMznu/arcgis/rest/services/taxisInteligentesAbril/FeatureServer/0",
     "_urlData": "data/datos1.json"
   },
-  "Mayo2017": {
+  "Mayo2018": {
     "serviceTaxisOrigen": "https://services.arcgis.com/8DAUcrpQcpyLMznu/arcgis/rest/services/taxisInteligentesMayo/FeatureServer/1",
     "serviceTaxisDestination": "https://services.arcgis.com/8DAUcrpQcpyLMznu/arcgis/rest/services/taxisInteligentesMayo/FeatureServer/0",
     "_urlData": "data/datos2.json"
@@ -48,15 +48,15 @@ require([
     height: "32px"
   };
   layerDestination = new FeatureLayer({
-    url: gisService.Abril2017.serviceTaxisDestination,
+    url: gisService.Abril2018.serviceTaxisDestination,
     visible: false
 
   });
   layerOrigin = new FeatureLayer({
-    url: gisService.Abril2017.serviceTaxisOrigen,
+    url: gisService.Abril2018.serviceTaxisOrigen,
     visible: false
   });
-  createSankey(gisService.Abril2017._urlData);
+  createSankey(gisService.Abril2018._urlData);
   map.add(layerDestination, 1);
   map.add(layerOrigin, 2);
   const layerList = new LayerList({
