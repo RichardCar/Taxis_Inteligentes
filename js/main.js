@@ -118,10 +118,10 @@ var createSankey = (data) => {
       closeOnClick: true,
       displayCloseButton: true,
       positionClass: "nfc-bottom-right",
-      showDuration: 5000,
+      showDuration: 10000,
       theme: "info"
     })({
-      title: "Notificación",
+      title: "Taxis Inteligentes",
       message: "haga clic sobre un origen"
     });
     sankey
@@ -223,37 +223,42 @@ var tour=()=>{
   var enjoyhint_instance = new EnjoyHint({});
   var enjoyhint_script_steps = [
     {
-      "next #intro": "<p>¡Hola!</p><p>Antes de comenzar debes saber sobre lo que significa la actividad de los taxis inteligentes.</p>",
+      "next #intro": "<p>¡Hola!</p><p>Antes de comenzar debes saber sobre lo que significa el uso de los taxis inteligentes. </p>",
+      "nextButton" : {text: "Siguiente"},
+      "skipButton" : {text: "Omitir"},
+    }
+    ,{
+      "next #filterMes": "<p>Puedes filtrar los datos por mes</p>",
       "nextButton" : {text: "Siguiente"},
       "skipButton" : {text: "Omitir"},
     }
     //,{
-    //   "next #filters": "<p>Puedes filtrar los datos que se muestran en todas las gráficas con estas opciones.</p>",
-    //   "nextButton" : {text: "Siguiente"},
-    //   "skipButton" : {text: "Omitir"},
-    // },{
     //   "click #f_ocupados": "<p>Por ejemplo, <b>haz clic</b> en Ocupado para desactivarlo y ocultar sus datos.</p>",
     //   "showSkip": false
-    // },{
-    //   "next #graphics-bars": "<p>Nota que los gráficos ahora sólo muestran los datos del estado <b>Disponible</b> ya que el filtro de Ocupado está desactivado.</p>",
-    //   "nextButton" : {text: "Siguiente"},
-    //   "skipButton" : {text: "Omitir"},
-    // },{
-    //   "next #map": "<p>Incluso el mapa se actualiza con los nuevos parámetros.</p>",
-    //   "nextButton" : {text: "Siguiente"},
-    //   "skipButton" : {text: "Omitir"},
-    // },{
+    // }
+    ,{
+      "next #grafico": "<p>Identifica cual es la localidad de donde salen mas servicios, además puedes hacer clic sobre un origen y el mapa reaccionara.</p>",
+      "nextButton" : {text: "Siguiente"},
+      "skipButton" : {text: "Omitir"},
+    }
+    ,{
+      "next #elmapa": "<p>Con el mapa puedes interactuar, haciendo zoom o moviéndote por el mapa; ahí podrás encontrar las zonas donde mas servicios se originan o terminan, si te acercas en el mapa podrás ver los puntos donde se originaron los servicios</p>",
+      "nextButton" : {text: "Siguiente"},
+      "skipButton" : {text: "Omitir"},
+    }
+    //,{
     //   "click #f_ocupados": "<p>Reactívalo nuevamente haciendo clic.</p>",
     //   "showSkip": false
     // },{
     //   "next #bars": "<p>Con esta gráfica también es posible filtrar los datos por hora haciendo click en la etiqueta de la hora o en la barra correspondiente.</p><p>Para desactivar el filtro debes hacer clic nuevamente.</p>",
     //   "nextButton" : {text: "Siguiente"},
     //   "skipButton" : {text: "Omitir"},
-    // },{
-    //   "next #data": "<p>Estos son los datos que se muestran en las gráficas, al usar los filtros estos valores también cambiarán.</p>",
-    //   "showSkip": false,
-    //   "nextButton" : {text: "Terminar"},
     // }
+    ,{
+      "next #insight": "<p>Por ultimo, aquí están nuestros análisis a la visualización</p>",
+      "showSkip": false,
+      "nextButton" : {text: "Terminar"},
+    }
   ];
 
   enjoyhint_instance.set(enjoyhint_script_steps);

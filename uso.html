@@ -21,7 +21,7 @@
                         Taxis Inteligentes
                     </h1>
                     <h2 class="subtitle">
-                        Analisis de informacion
+                        Análisis de Información
                     </h2>
                 </div>
             </div>
@@ -51,7 +51,7 @@
         </section>
         <section class="section">
             <div class="columns is-desktop">
-                <div class="field">
+                <div id="filterMes" class="field">
                     <div class="control">
                         <div class="select is-primary">
                             <select id="selMes">
@@ -63,10 +63,10 @@
                 </div>
             </div>
             <div class="columns is-desktop">
-                <div class="column has-text-centered">
+                <div id="grafico" class="column has-text-centered">
                     <span class="button">¿De dónde a dónde se toman los taxis en Bogotá?</span>
                 </div>
-                <div class="column has-text-centered">
+                <div id="elmapa" class="column has-text-centered">
                     <span class="button">Densidad de uso de los taxis</span>
                 </div>
             </div>
@@ -89,7 +89,7 @@
         <section class="section">
             <h1 class="title">Insights</h1>
             <h2 class="subtitle"></h2>
-            <div class="content">
+            <div id="insight" class="content">
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut lacus nisl, aliquet quis pharetra eget,
                     ullamcorper id mi. Donec neque nunc, eleifend eleifend nulla id, condimentum ultricies nunc.
                     Maecenas non pharetra nisi, non tincidunt dolor. Etiam eu magna egestas, posuere nulla sit amet,
@@ -124,8 +124,9 @@
             </div>
         </div>
     </footer>
-    
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
     <script src="libraries/enjoyhint/enjoyhint.min.js" type="text/javascript"></script>
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="https://js.arcgis.com/4.9/"></script>
@@ -136,7 +137,7 @@
     <script src="js/sankey.js"></script>
     <script src="js/main.js"></script>
     <script src="js/notifications.js" type="text/javascript"></script>
-    
+
 </body>
 
 </html>
