@@ -15,10 +15,9 @@ ejecutar la aplicación desde el explorador
 
 # Tecnologias usadas
 * D3 V5
-* Vegas
 * ArcGIS V4.9 js
 * EnjoyHint
-* jquery
+* JQuery
 * BulmaJs
 ___
 # **_Insights:_** :shipit:
