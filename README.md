@@ -29,7 +29,10 @@ ___
 
 ## Uso de los Taxis
 
-*
+* Para el mes de abril de 2018 y mayo de 2018 la mayor cantidad de servicios generados fue en las localidades de Puente Aranda y Suba respectivamente.
+* Los destinos mas servicios presentaron en los meses de abril y mayo de 2018 fueron Usaquén, Fontibón y suba.
+* Las zonas centro y norte son las que mas servicios de taxi solicitan y donde mas servicios de taxi finalizan.
+* Con el mapa se puede notar puntos calientes donde se podrían instalar zonas amarillas para que los taxis estén atentos a prestar el servicio.
 ___
 
 # De donde vienen los Datos
