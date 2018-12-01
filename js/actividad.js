@@ -728,7 +728,7 @@ function takeTour(){
       "nextButton" : {text: "Siguiente"},
       "skipButton" : {text: "Omitir"},
     },{
-      "next #map": "<p>Incluso el mapa se actualiza con los nuevos parámetros.</p>",
+      "next #map": "<p>Incluso el mapa se actualiza con los nuevos parámetros.<br>En el mapa puedes hacer zoom y click sobre los puntos para obtener más información.</p>",
       "nextButton" : {text: "Siguiente"},
       "skipButton" : {text: "Omitir"},
     },{
@@ -740,6 +740,10 @@ function takeTour(){
       "skipButton" : {text: "Omitir"},
     },{
       "next #data": "<p>Estos son los datos que se muestran en las gráficas, al usar los filtros estos valores también cambiarán.</p>",
+      "nextButton" : {text: "Siguiente"},
+      "skipButton" : {text: "Omitir"},
+    },{
+      "next #insights": "<p>Finalmente nuestro análisis de la información.</p>",
       "showSkip": false,
       "nextButton" : {text: "Terminar"},
     }
