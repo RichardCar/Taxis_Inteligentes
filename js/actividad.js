@@ -747,9 +747,9 @@ function takeTour(){
 
   enjoyhint_instance.set(enjoyhint_script_steps);
   enjoyhint_instance.run();
-  document.cookie = "tour=taken";
+  document.cookie = "guide=taken";
 }
 
-if(document.cookie.indexOf("tour") == -1){
+if(document.cookie.indexOf("guide") == -1){
   takeTour();
 }
