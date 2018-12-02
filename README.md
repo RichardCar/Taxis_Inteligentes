@@ -153,8 +153,8 @@ _Attributes:_
 | item   |      Type      |  Description |
 |----------|:-------------:|------:|
 | name (node) |  Categorical | nombres de las localidades de Bogotá |
-| node (node) |    Categorical (Todos los Departamentos de Colombia)   |   Division politica de Colombia |
-| region (node) | Categorical | identificador para la localidad en la red |
+| node (node) |    Categorical   |   identificador unico del nodo |
+| region (node) | Categorical | zona geografica del set de datos|
 | source (link) | Categorical | identificador de la localidad para el origen en la red|
 | target (link) | Categorical | identificador de la localidad para el destino en la red |
 | value (link) | Ordered -> Quantitative -> Sequential |  cantidad de servicios del origen al destino |
