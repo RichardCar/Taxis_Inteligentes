@@ -407,7 +407,8 @@ function drawMap(){
   "esri/widgets/LayerList",
   "esri/layers/FeatureLayer",
   "esri/renderers/Renderer",
-], function (Map, MapView, LayerList, FeatureLayer, Renderer) {
+  "esri/widgets/Home",
+], function (Map, MapView, LayerList, FeatureLayer, Renderer,Home) {
 
   var map = new Map({
       basemap:"gray-vector"
@@ -418,6 +419,10 @@ function drawMap(){
     center:[-74.080, 4.666],
     scale: 206000
   });
+  var homeBtn = new Home({
+    view: view
+  });
+  view.ui.add(homeBtn, "top-left");  
 
   var marks = new FeatureLayer("https://services.arcgis.com/8DAUcrpQcpyLMznu/arcgis/rest/services/EstadoTaxis/FeatureServer/0", {
     id:"marks",

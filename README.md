@@ -182,31 +182,44 @@ _Attributes:_
 
 
 * **Principal:** Identificar las localidades donde mas se reciben servicios y donde mas se termina servicios
-Search -> Browse (terget unknown, Location Known) (Outliers)
+
+**Search -> Browse (terget unknown, Location Known) (Outliers)**
 
 * **Secundaria:** Ubicar los lugares donde se recogen los pasajeros y de dejan
-Query -> Compare -> Sapatial Data
+
+**Query -> Compare -> Sapatial Data**
+
 * **Derive:** Modificar la información para lograr las tareas principales.
-Analyze -> Produce -> Derive (Attributes)
+
+**Analyze -> Produce -> Derive (Attributes)**
 
 ### How
-| Encode | Manipulate | Facet | Reduce |
-| ---|---|---|---|
-|Separate, Order, Align | Select |Superimpose| |
-|Separate | Navigate | Superimpose|
+|Tarea| Encode | Manipulate | Facet | Reduce |
+|---| ---|---|---|---|
+|Tarea 1|Separate, Order, Align | Select || |
+|Tarea 2|Separate | Navigate | Superimpose|
 
-### Marcas
+### Marcas y Canales
 
-**paht:** rectangulos que definen la localidad de donde salen los servicios o se dejan los servicios
-**lineas:** conexion entre los origenes y los destinos
-puntos:
-
-### Canales
-
-* Color hue: en los rectangulos define las zonas de la ciudad, en el mapa el color define el origen y el destino
-* Tamaño grosor de la linea: define la cantidad de servicios que se dieron en ese origne y destino
+ #### Tarea 1
+##### Marca
+* **paht:** rectangulos que definen la localidad de donde salen los servicios o se dejan los servicios.
+*  **lineas:** conexion entre los origenes y los destinos.
+##### Canales 
+* Color hue: en los rectangulos define las localidades de la ciudad.
 * tamaño del rectangulo, define la cantidad de servicios presentes en el origen o destino
-* color en el mapa e identifica las zonas donde mas se tienen servicios de llegada o recogida color Saturation
-* Color Luminance: los link de los nodos cambian de color con la seleccion
+* Tamaño grosor de la linea: define la cantidad de servicios que se dieron en ese origne y destino
+* Color Luminance: los link de los nodos cambian de color con la seleccion|
+
+#### Tarea 2
+##### Marca
+Shape (point, area)
+##### Canal 
+* color en el mapa e identifica las zonas donde mas se tienen servicios de llegada o recogida (color Saturation).
+
+### Screenshots
+![preview](/img/usotaxis.gif)
+
+
 
 

@@ -20,9 +20,11 @@ require([
   "esri/widgets/LayerList",
   "esri/layers/FeatureLayer",
   "esri/renderers/Renderer",
-  "esri/core/watchUtils"
+  "esri/core/watchUtils",
+  "esri/widgets/BasemapGallery",
+  "esri/widgets/Home"
 ], function (
-  WebMap, MapView, LayerList, FeatureLayer, Renderer, watchUtils
+  WebMap, MapView, LayerList, FeatureLayer, Renderer, watchUtils,BasemapGallery,Home
 ) {
 
   map = new WebMap({
@@ -59,6 +61,20 @@ require([
   createSankey(gisService.Abril2018._urlData);
   map.add(layerDestination, 1);
   map.add(layerOrigin, 2);
+  // var basemapGallery = new BasemapGallery({
+  //   view: view, 
+  //   open:false
+  // });
+  // view.ui.add(basemapGallery, {
+  //   position: "top-left"
+  // });
+  
+  var homeBtn = new Home({
+    view: view
+  });
+
+  // Add the home button to the top left corner of the view
+  view.ui.add(homeBtn, "top-left");  
   const layerList = new LayerList({
     view: view,
     listItemCreatedFunction: function (event) {
