@@ -130,8 +130,8 @@ Analyze -> Produce -> Derive (Attributes)
   * Latitud, Longitude: Position.
 
 ### Screenshots
-![preview](/img/ss-a1.png)
-![preview](/img/ss-a2.png)
+![preview](/img/ss-a1.gif)
+![preview](/img/ss-a2.gif)
 
 ___
 ## Uso de los Taxis
