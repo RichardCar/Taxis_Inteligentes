@@ -221,5 +221,11 @@ Shape (point, area)
 ![preview](/img/usotaxis.gif)
 
 
+---
 
+## Contenido Relacionado
+* [Paper en Español](https://github.com/fabianheredia/Taxis_Inteligentes/raw/master/paper/paper-es.pdf)
+* [Paper en Inglés](https://github.com/fabianheredia/Taxis_Inteligentes/raw/master/paper/paper-en.pdf)
+* [Presentación](https://fabianheredia.github.io/expoviz_TaxisInteligentes/slides/#/)
+* [Video](https://www.youtube.com/watch?v=EXDQE17uAwo)
 
